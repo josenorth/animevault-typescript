@@ -1,0 +1,9 @@
+div#root {
+    background-color: #111827;
+}
+.video-container {
+    position: relative;
+    width: 550px;
+    height: 270px !important;
+}
+

@@ -1,0 +1,20 @@
+# Dockerfile para el Frontend
+FROM node:20.18.0
+
+# Establecer el directorio de trabajo
+WORKDIR /app
+
+# Copiar los archivos de configuración y dependencias
+COPY frontend/package*.json ./
+
+# Instalar dependencias
+RUN npm install
+
+# Copiar el resto de los archivos de la aplicación
+COPY frontend .
+
+# Exponer el puerto que usará Vite
+EXPOSE 5173
+
+# Comando para ejecutar la aplicación
+CMD ["npm", "run", "dev"]

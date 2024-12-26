@@ -1,0 +1,41 @@
+.table-row-hover:hover {
+    background-color: #C084FC; /* Cambia el fondo al hacer hover */
+  }
+  
+  .anime-image-container {
+    position: relative;
+  }
+  
+  .anime-image {
+    display: block;
+    transition: opacity 0.3s ease;
+  }
+  
+  .anime-image-hover {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffffff;
+    font-size: 24px;
+  }
+  
+  .table-row-hover:hover .anime-image {
+    opacity: 0;
+  }
+  
+  .table-row-hover:hover .anime-image-hover {
+    display: block;
+  }
+  
+  .anime-link {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .anime-link:hover {
+    text-decoration: none;
+    color: white;
+  }
+  

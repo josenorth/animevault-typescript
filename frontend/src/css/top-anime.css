@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
+
+.custom-anime-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    transition: transform 0.2s;
+    width: 100%;
+    display: flex; /* Usar flexbox para la disposición */
+    align-items: center; /* Centrar verticalmente */
+}
+
+.custom-anime-image {
+    width: 100px; /* Ancho fijo para la imagen */
+    height: 150px; /* Alto fijo para la imagen */
+    border-radius: 0.5rem;
+    margin-right: 1rem; /* Espacio entre imagen y texto */
+}
+
+.custom-anime-info {
+    flex-grow: 1; /* Hacer que el contenedor de texto ocupe el espacio restante */
+    display: flex;
+    justify-content: space-between; /* Espaciado entre secciones */
+    align-items: center; /* Centrar verticalmente */
+}
+
+.custom-anime-status {
+    text-align: right;
+}
+
+.custom-card-body {
+    flex-grow: 1; /* Permitir que el cuerpo de la tarjeta crezca */
+}
+
+.custom-card-title {
+    margin-bottom: 0.5rem; /* Espacio inferior del título */
+}
+
+.top-10-title {
+    font-family: 'Overpass', sans-serif !important;
+    font-weight: 700;
+    font-size: 16px;
+    color: rgb(81, 97, 112);
+}
+
+.top-number {
+    font-weight: bold; /* Negrita para el número del top */
+    font-size: 24px; /* Tamaño del texto */
+    margin-right: 1rem; /* Espacio entre el número y la imagen */
+}

@@ -1,0 +1,29 @@
+/* scrollbar.css */
+
+/* Estilo personalizado para el scrollbar */
+.custom-scrollbar {
+    scroll-behavior: smooth !important; /* Desplazamiento suave */
+  }
+  
+  /* Otros estilos para el scrollbar */
+  .scrollbar-hidden {
+    overflow-y: hidden !important;
+  }
+  
+  .scrollbar-visible {
+    overflow-y: scroll !important;
+  }
+  
+  .scrollbar-visible::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .scrollbar-visible::-webkit-scrollbar-thumb {
+    background-color: #C084FC;
+    border-radius: 10px;
+  }
+  
+  .scrollbar-visible::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+  }
+  

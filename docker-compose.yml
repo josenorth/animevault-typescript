@@ -1,0 +1,59 @@
+services:
+  db:
+    image: mysql:8.4.3
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: ${TZ}  
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./backend/database:/docker-entrypoint-initdb.d
+      - ./mysql-config:/etc/mysql/conf.d
+      - /etc/timezone:/etc/timezone:ro  
+      - /etc/localtime:/etc/localtime:ro 
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      HOST_WEB: db
+      DB_USER_WEB: ${MYSQL_USER}
+      PASSWORD_WEB: ${MYSQL_PASSWORD}
+      DATABASE_WEB: ${MYSQL_DATABASE}
+      TZ: ${TZ}  # Puedes configurar TZ aquí también si lo deseas
+    volumes:
+      - ./backend:/app
+      - /etc/timezone:/etc/timezone:ro  # Monta el archivo de zona horaria
+      - /etc/localtime:/etc/localtime:ro  # Monta el archivo de localtime
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    environment:
+      TZ: ${TZ}  # Puedes configurar TZ aquí también si lo deseas
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /etc/timezone:/etc/timezone:ro  # Monta el archivo de zona horaria
+      - /etc/localtime:/etc/localtime:ro  # Monta el archivo de localtime
+
+volumes:
+  db_data:
+  mysql-config:

@@ -1,0 +1,28 @@
+# Ignorar el entorno virtual
+venv/
+
+# Ignorar directorios de dependencias
+node_modules/
+
+# Ignorar archivos de compilación y caché de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignorar archivos temporales y de respaldo
+*.bak
+*.tmp
+
+# Ignorar archivos de configuración del sistema
+*.DS_Store
+*.env
+
+# Ignorar archivos de log
+*.log
+
+# Ignorar archivos de base de datos
+*.sql
+
+# Ignorar archivos de pruebas
+test/
+tests/

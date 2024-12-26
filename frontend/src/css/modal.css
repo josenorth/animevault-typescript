@@ -1,0 +1,24 @@
+.modal {
+    transition: opacity 0.3s ease, transform 0.3s ease !important;
+    transform: translateY(-10px) !important;
+}
+
+.modal-enter {
+    opacity: 1 !important;
+    transform: translateY(0) !important ;
+}
+
+.modal-exit {
+    opacity: 0;
+    transform: translateY(-10px) !important ;
+}
+
+.bg-enter {
+    transition: background-color 0.3s ease !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.bg-exit {
+    transition: background-color 0.3s ease !important;
+    background-color: rgba(0, 0, 0, 0) !important;
+}
