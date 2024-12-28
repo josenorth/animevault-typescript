@@ -15,4 +15,5 @@ class ExternalSite(Base):
     notes = Column(Text, nullable=True)
     isDisabled = Column(Boolean, default=False)
 
-    external_links = relationship("MangaExternalLink", back_populates="site")
+    manga_external_links = relationship("MangaExternalLink", back_populates="site")
+    anime_external_links = relationship("AnimeExternalLink", back_populates="site")

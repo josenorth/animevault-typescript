@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import date
-from schemas.v1.genre import GenreSchema  # Importa el schema de Genre
+from schemas.v1.shared.genre import GenreSchema  # Importa el schema de Genre
 from schemas.v1.studio import StudioSchema  # Importa el schema de Studio
 from schemas.v1.season import SeasonSchema  # Importa el schema de Season
 

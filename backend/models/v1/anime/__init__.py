@@ -8,5 +8,6 @@ from .studio import Studio
 from .anime_genres import anime_genres
 from .anime_studios import anime_studios
 from .anime_trailer import AnimeTrailer
-from .external_site import AnimeExternalSite
-from .external_link import ExternalLink
+from .external_link import AnimeExternalLink
+from ..shared.external_site import ExternalSite
+from ..manga.manga_genres import manga_genres

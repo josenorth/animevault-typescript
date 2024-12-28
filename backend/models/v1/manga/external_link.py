@@ -13,4 +13,4 @@ class MangaExternalLink(Base):
     url = Column(String, nullable=False)
 
     manga = relationship("Manga", back_populates="external_links")
-    site = relationship(ExternalSite, back_populates="external_links")
+    site = relationship(ExternalSite, back_populates="manga_external_links")

@@ -9,17 +9,17 @@ import logging
 from sqlalchemy.orm import sessionmaker
 from database.db import engine
 from models.v1.anime import Anime
-from models.v1.genre import Genre
-from models.v1.studio import Studio
-from models.v1.anime_genres import anime_genres
+from models.v1.shared.genre import Genre
+from models.v1.anime.studio import Studio
+from models.v1.anime.anime_genres import anime_genres
 from models.v1.character.character import Character
-from models.v1.staff import Staff
-from models.v1.season import Season
-from models.v1.anime_character import AnimeCharacter
-from models.v1.anime_studios import anime_studios
-from models.v1.external_site import ExternalSite
-from models.v1.external_link import ExternalLink
-from models.v1.anime_trailer import AnimeTrailer
+from models.v1.anime.staff import Staff
+from models.v1.anime.season import Season
+from models.v1.anime.anime_character import AnimeCharacter
+from models.v1.anime.anime_studios import anime_studios
+from models.v1.shared.external_site import ExternalSite
+from models.v1.anime.external_link import AnimeExternalLink
+from models.v1.anime.anime_trailer import AnimeTrailer
 
 # Configurar el logger
 logging.basicConfig(filename='anime_fetch.log', level=logging.INFO, 
@@ -34,7 +34,7 @@ DELAY_BETWEEN_REQUESTS = 60 / MAX_REQUESTS_PER_MINUTE  # Delay entre solicitudes
 Session = sessionmaker(bind=engine)
 session = Session()
 
-def fetch_anime_without_characters_and_voice_actors(seasonYear, page=1, perPage=50):
+def fetch_anime_without_characters_and_voice_actors(page=1, perPage=50):
     query = '''
 query GetAnimes($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
@@ -103,6 +103,7 @@ query GetAnimes($page: Int, $perPage: Int) {
                 }
                 genres
                 source
+                isAdult
             }
         }
     }
@@ -172,6 +173,7 @@ def insert_anime(data):
                 existing_anime.episode_count = anime_data.get('episodes')
                 existing_anime.episode_duration = anime_data.get('duration')
                 existing_anime.season_id = period.id if period else None
+                existing_anime.isAdult = anime_data.get('isAdult')
                 logger.info(f"Actualizado anime: {existing_anime.title_romaji}")
             else:
                 anime = Anime(
@@ -192,7 +194,8 @@ def insert_anime(data):
                     source=anime_data.get('source'),
                     episode_count=anime_data.get('episodes'),
                     episode_duration=anime_data.get('duration'),
-                    season_id=period.id if period else None
+                    season_id=period.id if period else None,
+                    isAdult=anime_data.get('isAdult')
                 )
                 session.add(anime)
                 logger.info(f"Insertado nuevo anime: {anime.title_romaji}")
@@ -250,22 +253,22 @@ def insert_anime(data):
                             id=external_link_data['siteId'],
                             name=external_link_data['site'],
                             color=external_link_data.get('color'),
-                            icon=external_link_data.get('icon')
+                            icon=external_link_data.get('icon'),
+                            type=external_link_data.get('type'),
+                            language=external_link_data.get('language'),
+                            notes=external_link_data.get('notes'),
+                            isDisabled=external_link_data.get('isDisabled', False)
                         )
                         logger.info(f"Insertado nuevo sitio externo: id={site.id}, name={site.name}")
                         session.add(site)
                         session.commit()
 
-                existing_link = session.query(ExternalLink).filter_by(anime_id=anime_data['id'], site_id=site.id).first()
+                existing_link = session.query(AnimeExternalLink).filter_by(anime_id=anime_data['id'], site_id=site.id).first()
                 if not existing_link:
-                    external_link = ExternalLink(
+                    external_link = AnimeExternalLink(
                         anime_id=anime_data['id'],
                         site_id=site.id,
                         url=external_link_data['url'],
-                        type=external_link_data.get('type'),
-                        language=external_link_data.get('language'),
-                        notes=external_link_data.get('notes'),
-                        isDisabled=external_link_data.get('isDisabled', False)
                     )
                     logger.info(f"Insertado nuevo enlace externo: anime_id={external_link.anime_id}, site_id={external_link.site_id}")
                     session.add(external_link)
@@ -295,12 +298,12 @@ def handle_interrupt(signal, frame):
     logger.info(f"Script interrumpido. Tamaño total procesado: {total_response_size_kb:.2f} KB")
     sys.exit(0)
 
-def main(seasonYear, start_page=1):
+def main(start_page=1):
     global total_response_size_kb
     page = start_page
     perPage = 50
     while True:
-        data, response_size_kb = fetch_anime_without_characters_and_voice_actors(seasonYear, page, perPage)
+        data, response_size_kb = fetch_anime_without_characters_and_voice_actors(page, perPage)
         if data is None or 'data' not in data or 'Page' not in data['data'] or 'media' not in data['data']['Page']:
             logger.error(f"Error fetching data for page {page}. Retrying...")
             time.sleep(60)  # Esperar un minuto antes de reintentar
@@ -319,11 +322,10 @@ def main(seasonYear, start_page=1):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fetch and insert anime data from AniList API")
-    parser.add_argument('--season-year', type=int, required=True, help='The year for fetching anime data')
     parser.add_argument('--start-page', type=int, default=1, help='The page number to start fetching data from')
     args = parser.parse_args()
     # Manejador de interrupción
     signal.signal(signal.SIGINT, handle_interrupt)
 
     # Ejecutar el script principal
-    main(args.season_year, args.start_page)
+    main(args.start_page)

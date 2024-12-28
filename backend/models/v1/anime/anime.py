@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, Enum, func
 from sqlalchemy.orm import relationship
 from ..shared.genre import Genre
 from .season import Season
@@ -7,7 +7,7 @@ from .anime_trend import AnimeTrend
 from .anime_genres import anime_genres
 from .anime_studios import anime_studios
 from .anime_trailer import AnimeTrailer
-from .external_link import ExternalLink
+from .external_link import AnimeExternalLink
 from .anime_character import AnimeCharacter
 from database.db import Base
 
@@ -33,12 +33,15 @@ class Anime(Base):
     season_id = Column(Integer, ForeignKey('animevault.seasons.id'), nullable=True)  # Cambio aquí: season a season_id
     status = Column(Enum('FINISHED', 'RELEASING', 'NOT_YET_RELEASED', 'CANCELLED', 'HIATUS'), nullable=True)
     source = Column(Enum('ORIGINAL', 'MANGA', 'LIGHT_NOVEL', 'VISUAL_NOVEL', 'VIDEO_GAME', 'OTHER', 'NOVEL', 'DOUJINSHI', 'ANIME', 'WEB_NOVEL', 'LIVE_ACTION', 'GAME', 'COMIC', 'MULTIMEDIA_PROJECT', 'PICTURE_BOOK'), nullable=True)
+    isAdult = Column(Integer, default=0, nullable=True)
+    created_at = Column(Date, nullable=True, default=func.now())
+    updated_at = Column(Date, nullable=True, default=func.now(), onupdate=func.now() )
 
     season = relationship(Season, back_populates="animes")  # Relación con Season
     genres = relationship(Genre, secondary="animevault.anime_genres", back_populates="animes")
     trends = relationship(AnimeTrend, back_populates="anime")
     studios = relationship(Studio, secondary=anime_studios, back_populates="animes")
     trailers = relationship(AnimeTrailer, back_populates="anime")
-    external_links = relationship(ExternalLink, back_populates="anime")
+    external_links = relationship(AnimeExternalLink, back_populates="anime")
     anime_characters = relationship(AnimeCharacter, back_populates="anime")  # Añadir esta línea
     
