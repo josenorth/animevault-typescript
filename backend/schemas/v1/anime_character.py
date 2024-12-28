@@ -4,8 +4,9 @@ from datetime import date
 from schemas.v1.staff import StaffSchema
 
 class AnimeCharacterSchema(BaseModel):
-    role: Optional[str]
-    languageV2: Optional[str]
+    id: int
+    name_full: str
+    name_native: Optional[str]
 
     class Config:
         from_attributes = True
@@ -27,6 +28,18 @@ class CharacterWithStaff(BaseModel):
 
 class AnimeCharacters(BaseModel):
     characters: List[CharacterWithStaff] = []
+
+    class Config:
+        from_attributes = True
+
+class StaffWorkSchema(BaseModel):
+    character_name: str
+    character_image: str
+    anime_cover: str
+    anime_romaji: str
+    anime_english: Optional[str] = None
+    seasonYear: Optional[int] = None
+    role: Optional[str] = None
 
     class Config:
         from_attributes = True

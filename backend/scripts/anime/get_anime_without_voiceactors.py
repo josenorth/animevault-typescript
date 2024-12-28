@@ -11,12 +11,15 @@ from database.db import engine
 from models.v1.anime import Anime
 from models.v1.genre import Genre
 from models.v1.studio import Studio
-from backend.models.v1.season import Period
 from models.v1.anime_genres import anime_genres
 from models.v1.character.character import Character
 from models.v1.staff import Staff
+from models.v1.season import Season
 from models.v1.anime_character import AnimeCharacter
 from models.v1.anime_studios import anime_studios
+from models.v1.external_site import ExternalSite
+from models.v1.external_link import ExternalLink
+from models.v1.anime_trailer import AnimeTrailer
 
 # Configurar el logger
 logging.basicConfig(filename='anime_fetch.log', level=logging.INFO, 
@@ -70,6 +73,23 @@ def fetch_anime_without_characters_and_voice_actors(startDate, endDate, page=1, 
                 }
                 seasonYear
                 season
+                externalLinks {
+                    id
+                    url
+                    site
+                    siteId
+                    type
+                    language
+                    color
+                    icon
+                    notes
+                    isDisabled
+                }
+                trailer {
+                    id
+                    site
+                    thumbnail
+                }
                 format
                 status
                 episodes
@@ -122,9 +142,9 @@ def insert_anime(data):
             season = anime_data.get('season')
             period = None
             if season:
-                period = session.query(Period).filter_by(name=season).first()
+                period = session.query(Season).filter_by(name=season).first()
                 if not period:
-                    period = Period(name=season)
+                    period = Season(name=season)
                     session.add(period)
                 session.commit()
 
@@ -155,7 +175,7 @@ def insert_anime(data):
                 existing_anime.source = anime_data.get('source')
                 existing_anime.episode_count = anime_data.get('episodes')
                 existing_anime.episode_duration = anime_data.get('duration')
-                existing_anime.period_id = period.id if period else None
+                existing_anime.season_id = period.id if period else None
                 logger.info(f"Actualizado anime: {existing_anime.title_romaji}")
             else:
                 anime = Anime(
@@ -176,7 +196,7 @@ def insert_anime(data):
                     source=anime_data.get('source'),
                     episode_count=anime_data.get('episodes'),
                     episode_duration=anime_data.get('duration'),
-                    period_id=period.id if period else None
+                    season_id=period.id if period else None
                 )
                 session.add(anime)
                 logger.info(f"Insertado nuevo anime: {anime.title_romaji}")
@@ -195,7 +215,7 @@ def insert_anime(data):
                     anime.genres.append(genre)
             session.commit()
 
-                       # Insertar estudios en anime_studios
+            # Insertar estudios en anime_studios
             for studio_data, is_main in studios:
                 studio = session.query(Studio).filter_by(id=studio_data['id']).first()
                 if not studio:
@@ -222,6 +242,52 @@ def insert_anime(data):
                 existing_relation = session.query(anime_studios).filter_by(anime_id=anime_data['id'], studio_id=studio.id, isMain=is_main).first()
                 if not existing_relation:
                     session.execute(anime_studios.insert().values(anime_id=anime_data['id'], studio_id=studio.id, isMain=is_main))
+            session.commit()
+
+            # Insertar external_links
+            for external_link_data in anime_data['externalLinks']:
+                site = session.query(ExternalSite).filter_by(id=external_link_data['siteId']).first()
+                if not site:
+                    site = session.query(ExternalSite).filter_by(name=external_link_data['site']).first()
+                    if not site:
+                        site = ExternalSite(
+                            id=external_link_data['siteId'],
+                            name=external_link_data['site'],
+                            color=external_link_data.get('color'),
+                            icon=external_link_data.get('icon')
+                        )
+                        logger.info(f"Insertado nuevo sitio externo: id={site.id}, name={site.name}")
+                        session.add(site)
+                        session.commit()
+
+                existing_link = session.query(ExternalLink).filter_by(anime_id=anime_data['id'], site_id=site.id).first()
+                if not existing_link:
+                    external_link = ExternalLink(
+                        anime_id=anime_data['id'],
+                        site_id=site.id,
+                        url=external_link_data['url'],
+                        type=external_link_data.get('type'),
+                        language=external_link_data.get('language'),
+                        notes=external_link_data.get('notes'),
+                        isDisabled=external_link_data.get('isDisabled', False)
+                    )
+                    logger.info(f"Insertado nuevo enlace externo: anime_id={external_link.anime_id}, site_id={external_link.site_id}")
+                    session.add(external_link)
+            session.commit()
+
+            # Insertar trailer
+            if anime_data['trailer']:
+                existing_trailer = session.query(AnimeTrailer).filter_by(anime_id=anime_data['id'], trailer_id=anime_data['trailer']['id']).first()
+                if not existing_trailer:
+                    trailer_data = anime_data['trailer']
+                    trailer = AnimeTrailer(
+                        anime_id=anime_data['id'],
+                        trailer_id=trailer_data['id'],
+                        site=trailer_data['site'],
+                        thumbnail=trailer_data.get('thumbnail')
+                    )
+                    logger.info(f"Insertado nuevo trailer: anime_id={trailer.anime_id}, trailer_id={trailer.trailer_id}")
+                    session.add(trailer)
             session.commit()
 
     except Exception as e:
@@ -253,6 +319,7 @@ def main(startDate, endDate, start_page=1):
             break
         time.sleep(DELAY_BETWEEN_REQUESTS)
         page += 1
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fetch and insert anime data from AniList API")

@@ -20,22 +20,26 @@ import AnimeDetails from './components/anime/details/AnimeDetails';
 // import AnimeList from './components/anime/MyList/AnimeList';
 import GlobalHelmet from './components/GlobalHelmet';
 // import Schedule from './pages/Schedule';
-import Test from './pages/test';
+import { AnimePage } from './pages/AnimePage.tsx';
+import StaffPage from './pages/Staff';
+
 import './index.css';
 
 const App: React.FC = () => {
     return (
         <HelmetProvider>
-                <Router>
-                    <GlobalHelmet />
-                    <Routes>
-                        {/* <Route path="/" element={<HomePage />} /> */}
-                        {/* <Route path="/home" element={<HomePage />} /> */}
-                        {/* <Route path="/login" element={<Login />} />
+            <Router>
+                <GlobalHelmet />
+                <Routes>
+                    {/* <Route path="/" element={<HomePage />} /> */}
+                    {/* <Route path="/home" element={<HomePage />} /> */}
+                    {/* <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} /> */}
-                        <Route path="/search/anime" element={<SearchAnime />} />
-                        <Route path="/anime/:id_anime/:anime_name" element={<AnimeDetails />} />
-                        {/* <Route path="/user/:username/" element={<PrivateRoute element={<UserProfile />} />} />
+                    <Route path="/search/anime" element={<SearchAnime />} />
+                    <Route path="/anime/:id_anime/:anime_name" element={<AnimeDetails />} />
+                    <Route path="/staff/:id_staff/:staff_name" element={<StaffPage />} />
+                    <Route path="/staff/:id_staff" element={<StaffPage />} /> {/* Ruta alternativa para redirigir */}
+                    {/* <Route path="/user/:username/" element={<PrivateRoute element={<UserProfile />} />} />
                         <Route path="/settings" element={<PrivateRoute element={<Settings />} />} />
                         <Route path="/user/:username/stats" element={<PrivateRoute element={<Stats />} />} />
                         <Route path="/user/:username/favorites" element={<PrivateRoute element={<Favorite />} />} />
@@ -47,10 +51,10 @@ const App: React.FC = () => {
                         <Route path="/403" element={<ErrorPage errorType={403} />} />
                         <Route path="/404" element={<ErrorPage errorType={404} />} />
                         <Route path="*" element={<Navigate to="/404" />} /> */}
-                        <Route path="/test" element={<Test />} />
-                    </Routes>
-                    <Footer />
-                </Router>
+                    <Route path="/test" element={<AnimePage />} />
+                </Routes>
+                <Footer />
+            </Router>
         </HelmetProvider>
     );
 };

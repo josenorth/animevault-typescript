@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import date, datetime
+from schemas.v1.anime import Anime
 
 class StaffSchema(BaseModel):
     id: Optional[int]

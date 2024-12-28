@@ -6,14 +6,19 @@ from datetime import datetime
 
 from models.v1.anime import Anime as AnimeModel
 from models.v1.character.character import Character as CharacterModel
-from models.v1.staff import Staff as StaffModel
-from models.v1.anime_character import AnimeCharacter as AnimeCharacterModel
+from models.v1.anime.staff import Staff as StaffModel
+from models.v1.anime.anime_character import AnimeCharacter as AnimeCharacterModel
 from schemas.v1.anime import Anime
 from schemas.v1.anime_character import CharacterWithStaff, AnimeCharacters, StaffSchema
-from models.v1.anime_trend import AnimeTrend as AnimeTrendModel
-from models.v1.season import Season as SeasonModel
-from models.v1.anime_studios import anime_studios
-from models.v1.studio import Studio
+from models.v1.anime.anime_trend import AnimeTrend as AnimeTrendModel
+from models.v1.anime.season import Season as SeasonModel
+from models.v1.anime.anime_studios import anime_studios
+from models.v1.anime.studio import Studio
+from models.v1.anime.anime_trailer import AnimeTrailer as AnimeTrailerModel
+from models.v1.anime.external_link import ExternalLink as ExternalLinkModel
+from schemas.v1.anime_details import AnimeDetails
+from schemas.v1.anime_trailer import AnimeTrailer
+from schemas.v1.external_link import ExternalLink
 
 router = APIRouter()
 
@@ -125,7 +130,7 @@ def get_anime_by_id(anime_id: int, db: Session = Depends(get_db)):
     
     return map_anime_with_studios(anime, db)
 
-@router.get("/{anime_id}/characters", response_model=AnimeCharacters)
+@router.get("/{anime_id}/characters", response_model=AnimeCharacters, summary="Get Anime Characters", description="Retrieve the list of characters for a specific anime.")
 def get_anime_details(anime_id: int, db: Session = Depends(get_db)):
     anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
     if anime is None:
@@ -168,4 +173,21 @@ def get_anime_details(anime_id: int, db: Session = Depends(get_db)):
     
     return AnimeCharacters(
         characters=characters
+    )
+
+@router.get("/{anime_id}/details", response_model=AnimeDetails, summary="Get Anime Details", description="Retrieve detailed information about a specific anime.")
+def get_anime_details(anime_id: int, db: Session = Depends(get_db)):
+    anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
+    if anime is None:
+        raise HTTPException(status_code=404, detail="Anime not found")
+
+    trailers = db.query(AnimeTrailerModel).filter(AnimeTrailerModel.anime_id == anime_id).all()
+    external_links = db.query(ExternalLinkModel).filter(ExternalLinkModel.anime_id == anime_id).all()
+
+    trailers_pydantic = [AnimeTrailer.model_validate(trailer) for trailer in trailers]
+    external_links_pydantic = [ExternalLink.model_validate(link) for link in external_links]
+
+    return AnimeDetails(
+        trailers=trailers_pydantic,
+        external_links=external_links_pydantic
     )

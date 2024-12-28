@@ -8,14 +8,14 @@ import logging
 from sqlalchemy.orm import sessionmaker
 from database.db import engine
 from models.v1.anime import Anime
-from models.v1.genre import Genre
-from models.v1.studio import Studio
-from backend.models.v1.season import Period
-from models.v1.anime_genres import anime_genres
+from models.v1.shared.genre import Genre
+from models.v1.anime.studio import Studio
+from models.v1.anime.anime_genres import anime_genres
 from models.v1.character.character import Character
-from models.v1.staff import Staff
-from models.v1.anime_character import AnimeCharacter
-from models.v1.anime_studios import anime_studios
+from models.v1.anime.staff import Staff
+from models.v1.anime.anime_character import AnimeCharacter
+from models.v1.anime.anime_studios import anime_studios
+from models.v1.anime.season import Season
 
 # Configurar el logger
 logging.basicConfig(filename='anime_fetch.log', level=logging.INFO, 
@@ -29,9 +29,9 @@ DELAY_BETWEEN_REQUESTS = 60 / MAX_REQUESTS_PER_MINUTE  # Delay entre solicitudes
 Session = sessionmaker(bind=engine)
 session = Session()
 
-def fetch_anime_with_characters_and_voice_actors(startDate, endDate, page=1, perPage=50, characterPage=1):
+def fetch_anime_with_characters_and_voice_actors(seasonYear, page=1, perPage=50, characterPage=1):
     query = '''
-    query GetAnimesWithCharactersAndVoiceActors($startDate: FuzzyDateInt, $endDate: FuzzyDateInt, $page: Int, $perPage: Int, $characterPage: Int) {
+    query GetAnimesWithCharactersAndVoiceActors($seasonYear: Int, $page: Int, $perPage: Int, $characterPage: Int) {
         Page(page: $page, perPage: $perPage) {
             pageInfo {
                 currentPage
@@ -40,8 +40,7 @@ def fetch_anime_with_characters_and_voice_actors(startDate, endDate, page=1, per
             }
             media(
                 type: ANIME
-                startDate_greater: $startDate
-                endDate_lesser: $endDate
+                seasonYear: $seasonYear
             ) {
                 id
                 title {
@@ -132,8 +131,7 @@ def fetch_anime_with_characters_and_voice_actors(startDate, endDate, page=1, per
     }
     '''
     variables = {
-        "startDate": startDate,
-        "endDate": endDate,
+        "seasonYear": seasonYear,
         "page": page,
         "perPage": perPage,
         "characterPage": characterPage
@@ -164,9 +162,9 @@ def insert_anime(data):
             season = anime_data.get('season')
             period = None
             if season:
-                period = session.query(Period).filter_by(name=season).first()
+                period = session.query(Season).filter_by(name=season).first()
                 if not period:
-                    period = Period(name=season)
+                    period = Season(name=season)
                     session.add(period)
                 session.commit()
 
@@ -197,7 +195,7 @@ def insert_anime(data):
                 existing_anime.source = anime_data.get('source')
                 existing_anime.episode_count = anime_data.get('episodes')
                 existing_anime.episode_duration = anime_data.get('duration')
-                existing_anime.period_id = period.id if period else None
+                existing_anime.season_id = period.id if period else None
                 logger.info(f"Actualizado anime: {existing_anime.title_romaji}")
             else:
                 anime = Anime(
@@ -218,7 +216,7 @@ def insert_anime(data):
                     source=anime_data.get('source'),
                     episode_count=anime_data.get('episodes'),
                     episode_duration=anime_data.get('duration'),
-                    period_id=period.id if period else None
+                    season_id=period.id if period else None
                 )
                 session.add(anime)
                 logger.info(f"Insertado nuevo anime: {anime.title_romaji}")
@@ -328,12 +326,12 @@ def insert_anime(data):
         logger.error(f"Error inserting anime data: {e}")
         session.rollback()
 
-def main(startDate, endDate, start_page=1):
+def main(seasonYear, start_page=1):
     page = start_page
     perPage = 50
     while True:
-        for character_page in range(1, 2):  # Cambiado de 5 a 9 para incluir characterPage 1
-            data, response_size_kb = fetch_anime_with_characters_and_voice_actors(startDate, endDate, page, perPage, character_page)
+        for character_page in range(1, 5):  # Cambiado de 5 a 9 para incluir characterPage 1
+            data, response_size_kb = fetch_anime_with_characters_and_voice_actors(seasonYear, page, perPage, character_page)
             if data is None or 'data' not in data or 'Page' not in data['data'] or 'media' not in data['data']['Page']:
                 logger.error(f"Error fetching data for page {page}, character page {character_page}. Retrying...")
                 time.sleep(60)  # Esperar un minuto antes de reintentar
@@ -349,8 +347,7 @@ def main(startDate, endDate, start_page=1):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fetch and insert anime data from AniList API")
-    parser.add_argument('--start-date', type=int, required=True, help='The start date for fetching anime data (YYYYMMDD)')
-    parser.add_argument('--end-date', type=int, required=True, help='The end date for fetching anime data (YYYYMMDD)')
+    parser.add_argument('--season-year', type=int, required=True, help='The year for fetching anime data') 
     parser.add_argument('--start-page', type=int, default=1, help='The page number to start fetching data from')
     args = parser.parse_args()
-    main(args.start_date, args.end_date, args.start_page)
+    main(args.season_year, args.start_page)

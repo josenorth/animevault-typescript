@@ -2,6 +2,7 @@ import { Genre } from './Genre'
 import { Studio } from './Studio'
 
 export interface Anime {
+  id: number
   title_romaji: string
   title_english: string
   native: string
@@ -20,7 +21,7 @@ export interface Anime {
   format: string
   status: string
   source: string
-  id: number
+  season: string
   genres: Genre[]
   studios: Studio[]
 }

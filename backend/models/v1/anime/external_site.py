@@ -2,14 +2,13 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from database.db import Base
 
-class Genre(Base):
-    __tablename__ = 'genres'
+class AnimeExternalSite(Base):
+    __tablename__ = 'external_sites'
     __table_args__ = {'schema': 'animevault'}
-    
+
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
+    color = Column(String, nullable=True)
+    icon = Column(String, nullable=True)
 
-    animes = relationship("Anime", secondary="anime_genres", back_populates="genres")
-
-    def __repr__(self):
-        return f"<Genre(id={self.id}, name='{self.name}')>"
+    external_links = relationship("ExternalLink", back_populates="site")

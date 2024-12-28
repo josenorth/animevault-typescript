@@ -22,3 +22,4 @@ export const useAnimeCharacters = (id: number) => {
     refetchOnWindowFocus: false,
   })
 }
+

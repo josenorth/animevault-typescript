@@ -74,9 +74,10 @@ img.w-full.h-\[150px\].object-cover.rounded-md {
     height: 265px !important; /* Ajusta esta altura según necesites */
     background-color: #111827 !important;
   }
-.div#root {
-    background-color: #111827; 
-}
+  #root {
+   background-color: #111827;
+  }
+
 @media (min-width: 1540px) {
     .custom-container {
         max-width: 1520px;

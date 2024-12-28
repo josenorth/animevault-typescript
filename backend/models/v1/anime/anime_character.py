@@ -14,3 +14,4 @@ class AnimeCharacter(Base):
 
     staff = relationship("Staff", back_populates="anime_characters")
     character = relationship("Character", back_populates="anime_characters")
+    anime = relationship("Anime", back_populates="anime_characters")

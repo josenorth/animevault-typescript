@@ -10,7 +10,9 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		fontFamily: {
-  			sans: ['Poppins', 'sans-serif']
+			sans: ['Lato', 'sans-serif'],
+  			poppins: ['Poppins', 'sans-serif'],
+			heading: ['Montserrat', 'sans-serif']
   		},
   		colors: {
   			background: 'hsl(var(--background))',

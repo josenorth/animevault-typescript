@@ -1,7 +1,5 @@
 from pydantic import BaseModel
 
-
-
 class StudioSchema(BaseModel):
     id: int
     name: str
