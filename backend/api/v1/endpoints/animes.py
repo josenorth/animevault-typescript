@@ -19,6 +19,10 @@ from models.v1.anime.external_link import AnimeExternalLink
 from schemas.v1.anime_details import AnimeDetails
 from schemas.v1.anime_trailer import AnimeTrailer
 from schemas.v1.external_link import ExternalLink
+from schemas.v1.streaming_link import StreamingLink
+from models.v1.anime.streaming_link import StreamingLink as StreamingLinkModel
+from models.v1.manga.manga import Manga as MangaModel
+
 
 router = APIRouter()
 
@@ -191,3 +195,73 @@ def get_anime_details(anime_id: int, db: Session = Depends(get_db)):
         trailers=trailers_pydantic,
         external_links=external_links_pydantic
     )
+
+@router.get("/{anime_id}/episodes", response_model=List[StreamingLink], 
+            summary="Get Anime Episodes", 
+            description="Retrieve all streaming episodes for a specific anime")
+def get_anime_episodes(anime_id: int, db: Session = Depends(get_db)):
+    anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
+    if anime is None:
+        raise HTTPException(status_code=404, detail="Anime not found")
+
+    episodes = db.query(StreamingLinkModel).filter(
+        StreamingLinkModel.anime_id == anime_id
+    ).order_by(StreamingLinkModel.created_at.asc()).all()
+
+    return episodes
+
+from crud.anime import get_relations_by_anime_id
+from schemas.v1.shared.relations import RelationSchema, RelatedAnimeSchema, RelatedMangaSchema
+from models.v1.shared.relations import Relations as RelationModel
+from typing import List
+
+@router.get("/{anime_id}/relations", response_model=List[RelationSchema], summary="Get Anime Relations", description="Retrieve all relations for a specific anime")
+def get_anime_relations(anime_id: int, db: Session = Depends(get_db)):
+    anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
+    if anime is None:
+        raise HTTPException(status_code=404, detail="Anime not found")
+
+    relations = db.query(RelationModel).filter(RelationModel.anime_id == anime_id).all()
+    if not relations:
+        raise HTTPException(status_code=404, detail="Relations not found")
+
+    result = []
+    for relation in relations:
+        related_anime = None
+        related_manga = None
+
+        # Obtener datos de related_anime
+        if relation.related_anime_id:
+            anime_data = db.query(AnimeModel).filter(AnimeModel.id == relation.related_anime_id).first()
+            if anime_data:
+                related_anime = RelatedAnimeSchema(
+                    id=anime_data.id,
+                    title_romaji=anime_data.title_romaji,
+                    title_english=anime_data.title_english,
+                    cover_image=anime_data.coverImage
+                )
+
+        # Obtener datos de related_manga
+        if relation.related_manga_id:
+            manga_data = db.query(MangaModel).filter(MangaModel.id == relation.related_manga_id).first()
+            if manga_data:
+                related_manga = RelatedMangaSchema(
+                    id=manga_data.id,
+                    title_romaji=manga_data.title_romaji,
+                    title_english=manga_data.title_english,
+                    cover_image=manga_data.coverImage
+                )
+
+        # Crear relación principal
+        result.append(
+            RelationSchema(
+                id=relation.id,
+                related_anime_id=relation.related_anime_id,
+                related_manga_id=relation.related_manga_id,
+                relation_type=relation.relation_type,
+                related_anime=related_anime,
+                related_manga=related_manga
+            )
+        )
+
+    return result

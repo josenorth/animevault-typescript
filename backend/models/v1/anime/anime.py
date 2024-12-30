@@ -9,6 +9,8 @@ from .anime_studios import anime_studios
 from .anime_trailer import AnimeTrailer
 from .external_link import AnimeExternalLink
 from .anime_character import AnimeCharacter
+from .streaming_link import StreamingLink
+from ..shared.relations import Relations
 from database.db import Base
 
 class Anime(Base):
@@ -44,4 +46,7 @@ class Anime(Base):
     trailers = relationship(AnimeTrailer, back_populates="anime")
     external_links = relationship(AnimeExternalLink, back_populates="anime")
     anime_characters = relationship(AnimeCharacter, back_populates="anime")  # Añadir esta línea
+    streaming_links = relationship(StreamingLink, back_populates="anime", cascade="all, delete-orphan")
     
+    relations = relationship(Relations, foreign_keys=[Relations.anime_id], back_populates="anime")
+    related_relations = relationship(Relations, foreign_keys=[Relations.related_anime_id], back_populates="related_anime")

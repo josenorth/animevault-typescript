@@ -1,4 +1,4 @@
-import { Genre } from './Genre'
+import { Genre } from '../shared/Genre'
 import { Studio } from './Studio'
 
 export interface Anime {

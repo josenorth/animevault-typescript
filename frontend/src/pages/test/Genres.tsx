@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge'
 import { motion } from 'framer-motion'
-import { Genre } from '@/types/anime/Genre'
+import { Genre } from '@/types/shared/Genre'
 import { staggerChildren, slideUp } from '../utils/animations'
 
 export function Genres({ genres }: { genres: Genre[] }) {

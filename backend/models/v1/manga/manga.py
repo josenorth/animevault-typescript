@@ -8,7 +8,7 @@ from .manga_trend import MangaTrend
 from .manga_trailer import MangaTrailer
 from .external_link import MangaExternalLink
 from ..shared.genre import Genre
-
+from ..shared.relations import Relations
 
 
 class Manga(Base):
@@ -37,3 +37,6 @@ class Manga(Base):
     trailers = relationship(MangaTrailer, back_populates="manga")
     external_links = relationship(MangaExternalLink, back_populates="manga")
     genres = relationship(Genre, secondary=manga_genres, back_populates="mangas")
+   
+    relations = relationship(Relations, foreign_keys=[Relations.manga_id], back_populates="manga")
+    related_relations = relationship(Relations, foreign_keys=[Relations.related_manga_id], back_populates="related_manga")

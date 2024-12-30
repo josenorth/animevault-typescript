@@ -8,3 +8,4 @@ from ..shared.external_site import ExternalSite
 from ..character.character import Character
 from ..anime.anime_genres import anime_genres
 from ..shared.external_site import ExternalSite
+from ..shared.relations import Relations 

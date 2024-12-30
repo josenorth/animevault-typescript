@@ -1,0 +1,1 @@
+from ..anime.anime_character import AnimeCharacter

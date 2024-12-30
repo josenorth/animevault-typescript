@@ -116,9 +116,9 @@ query GetMangasWithCharacters($page: Int, $perPage: Int) {
                 thumbnail
               }
                 countryOfOrigin
-                source
+                source(version: 3)
                 format
-                status
+                status(version: 2)
                 chapters
                 volumes
                 isAdult
@@ -215,8 +215,7 @@ def insert_manga(data):
                     manga.genres.append(genre)
             session.commit()
 
-
-                        # Insertar external_links
+        # Insertar external_links
             for external_link_data in manga_data['externalLinks']:
                 site = session.query(ExternalSite).filter_by(id=external_link_data['siteId']).first()
                 if not site:
