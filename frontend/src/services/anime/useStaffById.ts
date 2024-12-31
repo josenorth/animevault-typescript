@@ -15,9 +15,11 @@ const fetchAnimeStaff = async (id: number): Promise<Staff> => {
   
   // Hook que utiliza la estructura de Character[]
   export const useAnimeStaff = (id: number) => {
-    return useQuery(['animeStaff', id], () => fetchAnimeStaff(id), {
+    return useQuery( {
+      queryKey: ['anime-staff', id],
+      queryFn: () => fetchAnimeStaff(id),
       staleTime: 1000 * 60 * 5, // 5 minutos
-      cacheTime: 1000 * 60 * 10, // 10 minutos
+      gcTime: 1000 * 60 * 10, // 10 minutos
       refetchOnWindowFocus: false,
     })
   }

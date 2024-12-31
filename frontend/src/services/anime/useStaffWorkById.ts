@@ -13,9 +13,11 @@ const fetchAnimeStaffWork = async (id: number): Promise<StaffWork[]> => {
 };
 
 export const useAnimeStaffWork = (id: number) => {
-    return useQuery(['animeStaffWork', id], () => fetchAnimeStaffWork(id), {
+    return useQuery({
+        queryKey: ['staff', id],
+        queryFn: () => fetchAnimeStaffWork(id),
         staleTime: 1000 * 60 * 5, // 5 minutos
-        cacheTime: 1000 * 60 * 10, // 10 minutos
+        gcTime: 1000 * 60 * 10, // 10 minutos
         refetchOnWindowFocus: false,
     });
-};
+}

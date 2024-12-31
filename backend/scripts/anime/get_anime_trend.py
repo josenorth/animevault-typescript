@@ -6,7 +6,7 @@ import time
 import argparse
 from sqlalchemy.orm import sessionmaker
 from database.db import engine
-from models.v1.anime_trend import AnimeTrend
+from models.v1.anime.anime_trend import AnimeTrend
 from models.v1.anime import Anime
 from datetime import datetime
 

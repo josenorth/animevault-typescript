@@ -1,5 +1,6 @@
 import { Genre } from '../shared/Genre'
 import { Studio } from './Studio'
+import { Episode } from './Episode'
 
 export interface Anime {
   id: number
@@ -9,7 +10,6 @@ export interface Anime {
   description: string
   coverImage: string
   bannerImage: string
-  cover_color_hex: string
   studio_id: number
   episode_count: number
   episode_duration: number

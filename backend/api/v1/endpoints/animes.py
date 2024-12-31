@@ -19,9 +19,11 @@ from models.v1.anime.external_link import AnimeExternalLink
 from schemas.v1.anime_details import AnimeDetails
 from schemas.v1.anime_trailer import AnimeTrailer
 from schemas.v1.external_link import ExternalLink
+from schemas.v1.studio import StudioSchema
 from schemas.v1.streaming_link import StreamingLink
 from models.v1.anime.streaming_link import StreamingLink as StreamingLinkModel
 from models.v1.manga.manga import Manga as MangaModel
+from models.v1.anime.anime_studios import anime_studios
 
 
 router = APIRouter()
@@ -126,6 +128,19 @@ def get_upcoming_next_season(db: Session = Depends(get_db)):
 
     return [map_anime_with_studios(anime, db) for anime in upcoming_animes]
 
+
+# endpoint para obtener el top 100 de animes a traves del average_score y como segundo parametro popularity
+@router.get("/top-100", response_model=List[Anime])
+def get_top_100_animes(db: Session = Depends(get_db)):
+    top_100_animes = db.query(AnimeModel).order_by(AnimeModel.average_score.desc(), AnimeModel.popularity.desc()).limit(100).all()
+    return [map_anime_with_studios(anime, db) for anime in top_100_animes]
+
+# endpoint para obtener los animes mas populares de todo el tiempo
+@router.get("/all-time-popular", response_model=List[Anime])
+def get_all_time_popular_animes(db: Session = Depends(get_db)):
+    popular_animes = db.query(AnimeModel).join(AnimeTrendModel).order_by(AnimeTrendModel.popularity.desc()).limit(6).all()
+    return [map_anime_with_studios(anime, db) for anime in popular_animes]
+
 @router.get("/{anime_id}", response_model=Anime)
 def get_anime_by_id(anime_id: int, db: Session = Depends(get_db)):
     anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
@@ -179,22 +194,52 @@ def get_anime_details(anime_id: int, db: Session = Depends(get_db)):
         characters=characters
     )
 
-@router.get("/{anime_id}/details", response_model=AnimeDetails, summary="Get Anime Details", description="Retrieve detailed information about a specific anime.")
-def get_anime_details(anime_id: int, db: Session = Depends(get_db)):
+# endpoint para traer los studios de un anime
+@router.get("/{anime_id}/studios", response_model=List[StudioSchema], summary="Get Anime Studios", description="Retrieve the list of studios for a specific anime.")
+def get_anime_studios(anime_id: int, db: Session = Depends(get_db)):
     anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
     if anime is None:
         raise HTTPException(status_code=404, detail="Anime not found")
 
-    trailers = db.query(AnimeTrailerModel).filter(AnimeTrailerModel.anime_id == anime_id).all()
-    external_links = db.query(AnimeExternalLink).filter(AnimeExternalLink.anime_id == anime_id).all()
+    studios = db.query(
+        Studio.id,
+        Studio.name,
+        anime_studios.c.isMain
+    ).join(anime_studios, Studio.id == anime_studios.c.studio_id).filter(
+        anime_studios.c.anime_id == anime.id
+    ).all()
 
-    trailers_pydantic = [AnimeTrailer.model_validate(trailer) for trailer in trailers]
-    external_links_pydantic = [ExternalLink.model_validate(link) for link in external_links]
+    return [StudioSchema(id=studio.id, name=studio.name, isMain=studio.isMain) for studio in studios]
 
-    return AnimeDetails(
-        trailers=trailers_pydantic,
-        external_links=external_links_pydantic
-    )
+# endpoint para traer el trailer de un anime
+@router.get("/{anime_id}/trailer", response_model=AnimeTrailer, summary="Get Anime Trailer", description="Retrieve the trailer for a specific anime.")
+def get_anime_trailer(anime_id: int, db: Session = Depends(get_db)):
+    anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
+    if anime is None:
+        raise HTTPException(status_code=404, detail="Anime not found")
+
+    trailer = db.query(AnimeTrailerModel).filter(AnimeTrailerModel.anime_id == anime_id).first()
+    if trailer is None:
+        raise HTTPException(status_code=404, detail="Trailer not found")
+
+    return AnimeTrailer.model_validate(trailer)
+
+# @router.get("/{anime_id}/details", response_model=AnimeDetails, summary="Get Anime Details", description="Retrieve detailed information about a specific anime.")
+# def get_anime_details(anime_id: int, db: Session = Depends(get_db)):
+#     anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
+#     if anime is None:
+#         raise HTTPException(status_code=404, detail="Anime not found")
+
+#     trailers = db.query(AnimeTrailerModel).filter(AnimeTrailerModel.anime_id == anime_id).all()
+#     external_links = db.query(AnimeExternalLink).filter(AnimeExternalLink.anime_id == anime_id).all()
+
+#     trailers_pydantic = [AnimeTrailer.model_validate(trailer) for trailer in trailers]
+#     external_links_pydantic = [ExternalLink.model_validate(link) for link in external_links]
+
+#     return AnimeDetails(
+#         trailers=trailers_pydantic,
+#         external_links=external_links_pydantic
+#     )
 
 @router.get("/{anime_id}/episodes", response_model=List[StreamingLink], 
             summary="Get Anime Episodes", 

@@ -58,6 +58,11 @@ def get_popular_manwa(db: Session = Depends(get_db)):
     popular_manwas = db.query(MangaModel).filter(MangaModel.countryOfOrigin == 'KR').join(MangaTrendModel).order_by(MangaTrendModel.popularity.desc()).limit(6).all()
     return [map_manga_with_genres(manga, db) for manga in popular_manwas]
 
+#endpoint para obtener el top 100 de mangas a traves de su averageScore de mayor a menor
+@router.get("/top-100", response_model=List[MangaSchema])
+def get_top_100(db: Session = Depends(get_db)):
+    top_100_mangas = db.query(MangaModel).order_by(MangaModel.averageScore.desc()).limit(100).all()
+    return [map_manga_with_genres(manga, db) for manga in top_100_mangas]
 
 @router.get("/{manga_id}", response_model=MangaSchema)
 def get_manga(manga_id: int, db: Session = Depends(get_db)):

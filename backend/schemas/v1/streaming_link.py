@@ -13,9 +13,6 @@ class StreamingLinkCreate(StreamingLinkBase):
 
 class StreamingLink(StreamingLinkBase):
     id: int
-    anime_id: int
-    created_at: datetime
-    updated_at: datetime
 
     class Config:
         from_attributes = True

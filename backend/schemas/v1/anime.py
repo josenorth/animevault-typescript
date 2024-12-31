@@ -21,7 +21,7 @@ class AnimeBase(BaseModel):
     start_date: Optional[date] = None
     end_date: Optional[date] = None
     seasonYear: Optional[int] = None
-    format: str
+    format: Optional[str] = None
     status: Optional[str] = None
     source: Optional[str] = None
 

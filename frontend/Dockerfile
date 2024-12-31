@@ -1,5 +1,5 @@
 # Dockerfile para el Frontend
-FROM node:20.18.0
+FROM node:22.12.0
 
 # Establecer el directorio de trabajo
 WORKDIR /app
@@ -14,7 +14,7 @@ RUN npm install
 COPY frontend .
 
 # Exponer el puerto que usará Vite
-EXPOSE 5173
+EXPOSE 3000
 
 # Comando para ejecutar la aplicación
 CMD ["npm", "run", "dev"]

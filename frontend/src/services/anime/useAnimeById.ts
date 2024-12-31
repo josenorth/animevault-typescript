@@ -13,9 +13,11 @@ const fetchAnimeById = async (id: number): Promise<Anime> => {
 }
 
 export const useAnimeById = (id: number) => {
-  return useQuery(['anime', id], () => fetchAnimeById(id), {
+  return useQuery( {
+    queryKey: ['anime', id],
+    queryFn: () => fetchAnimeById(id),
     staleTime: 1000 * 60 * 5, // 5 minutos
-    cacheTime: 1000 * 60 * 10, // 10 minutos
+    gcTime: 1000 * 60 * 10, // 10 minutos
     refetchOnWindowFocus: false,
   })
 }

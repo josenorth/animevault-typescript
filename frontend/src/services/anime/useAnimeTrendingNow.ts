@@ -14,9 +14,11 @@ const fetchAnimeTrendingNow = async (): Promise<Anime[]> => {
 }
 
 export const useAnimeTrendingNow = () => {
-  return useQuery(['trending-now'], fetchAnimeTrendingNow, {
+  return useQuery( {
+    queryKey: ['trending-now'],
+    queryFn: fetchAnimeTrendingNow,
     staleTime: 1000 * 60 * 5, // 5 minutos
-    cacheTime: 1000 * 60 * 10, // 10 minutos
+    gcTime: 1000 * 60 * 10, // 10 minutos
     refetchOnWindowFocus: false,
   })
 }

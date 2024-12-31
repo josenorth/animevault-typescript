@@ -1,137 +1,84 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import Skeleton from 'react-loading-skeleton';
-import { Anime } from '@/types/anime/Anime';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Smile, Meh, Frown } from 'lucide-react'
-import { cn } from "@/lib/utils"
-
+import Image from 'next/image'
+import Link from 'next/link'
+import { Circle } from 'lucide-react'
+import { Anime } from '@/types/anime/Anime'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 interface AnimeCardProps {
-    anime: Anime;
+  anime: Anime
+  isLoading: boolean
 }
 
-export function AnimeCard({ anime }: AnimeCardProps) {
-    const [isLoading, setIsLoading] = React.useState(true)
-    const [isHovered, setIsHovered] = React.useState(false)
+export const defaultAnime: Anime = {
+  id: 0,
+  title_romaji: '',
+  title_english: '',
+  native: '',
+  description: '',
+  coverImage: '',
+  bannerImage: '',
+  status: '',
+  episode_count: 0,
+  episode_duration: 0,
+  season: '',
+  studio_id: 0,
+  seasonYear: 0,
+  format: '',
+  genres: [],
+  average_score: 0,
+  popularity: 0,
+  start_date: '',
+  end_date: '',
+  studios: [],
+  source: ''
+}
 
-    const formattedTitle = React.useMemo(() => {
-        const title = anime.title_english || anime.title_romaji
-        return title ? title.replace(/\s+/g, '-').toLowerCase() : ''
-    }, [anime.title_english, anime.title_romaji])
-
-    const studioNames = anime.studios
-        ?.filter(studio => studio.isMain)
-        .map(studio => studio.name)
-        .join(', ') || '';
-
-    const getSmileColor = (score: number) => {
-        if (score >= 75) return "text-green-500"; // Excelente
-        if (score >= 60) return "text-yellow-500"; // Promedio
-        return "text-red-500"; // Baja calificación
-    };
-
-    // Función para determinar el ícono
-    const getSmileIcon = (score: number) => {
-        if (score >= 75) return <Smile className="h-5 w-5" />;
-        if (score >= 60) return <Meh className="h-5 w-5" />;
-        return <Frown className="h-5 w-5" />;
-    };
-
-    return (
-        <div
-            className="relative"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            <Link to={`/anime/${anime.id}/${formattedTitle}`}>
-                <div className="relative block">
-                    <div className="w-full h-[265px] relative font-poppins">
-                        {isLoading && <Skeleton className="h-full w-full rounded-md" />}
-                        <img
-                            src={anime.coverImage || '/placeholder.svg'}
-                            alt={anime.title_english || anime.title_romaji || 'Anime'}
-                            className={cn(
-                                "w-full h-[265px] object-cover rounded-md transition-opacity duration-500 font-poppins",
-                                isLoading ? "opacity-0" : "opacity-100"
-                            )}
-                            onLoad={() => setIsLoading(false)}
-                        />
-                    </div>
-                    {anime.status === "NOT_YET_RELEASED" && (
-                        <Badge variant="destructive" className="absolute top-2 left-2">
-                            Upcoming
-                        </Badge>
-                    )}
-                    <div className="p-0 mt-2">
-                        <p className="text-sm font-semibold text-[#8ba0b2]">
-                            {anime.title_english || anime.title_romaji}
-                        </p>
-                    </div>
-                </div>
-            </Link>
-
-            {/* Hover Card */}
-            <Card
-                className={cn(
-                    "absolute top-0 left-full ml-4 z-10 transform bg-[#1a1f2e] border-0 p-4 w-[300px]",
-                    isHovered
-                        ? "opacity-100 translate-y-0 pointer-events-auto transition-all duration-300 ease-in-out"
-                        : "opacity-0 translate-y-0 pointer-events-none"
-                )}
-            >
-                <div
-                    className={cn(
-                        "absolute top-8 -left-2 transform -translate-y-1/2 w-0 h-0",
-                        "border-t-[12px] border-t-transparent",
-                        "border-b-[12px] border-b-transparent",
-                        "border-r-[12px] border-r-[#1a1f2e]"
-                    )}
-                />
-                <div className="flex items-center justify-between">
-                    <span className="text-blue-400 text-sm">
-                        {anime.status || "Airing"}
-                    </span>
-                    {anime.average_score > 0 && ( // Mostrar solo si el puntaje es mayor a 0
-                        <div className="flex items-center gap-1">
-                            <div
-                                className={cn(
-                                    "flex items-center",
-                                    getSmileColor(anime.average_score)
-                                )}
-                            >
-                                {getSmileIcon(anime.average_score)}
-                            </div>
-                            <span className="text-white">{anime.average_score}%</span>
-                        </div>
-                    )}
-                </div>
-
-                <div className="space-y-1">
-                    <h3 className="text-blue-400 font-medium">
-                        {studioNames}
-                    </h3>
-                    <p className="text-gray-400 text-sm">
-                        {anime.format} • {anime.episode_count} episodes
-                    </p>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mt-2">
-                    {anime.genres?.slice(0, 3).map((genre) => (
-                        <Badge
-                            key={genre.name}
-                            variant="secondary"
-                            className="bg-blue-500/10 text-blue-300 hover:bg-blue-500/20"
-                        >
-                            {genre.name.toLowerCase()}
-                        </Badge>
-                    ))}
-                </div>
-            </Card>
+export default function AnimeCard({ anime, isLoading }: AnimeCardProps) {
+    function formatTitleWithHyphen(title: string): string {
+      return title.trim().replace(/\s+/g, '-');
+    }
+  
+    const formattedTitle = formatTitleWithHyphen(anime.title_romaji);
+  
+    if (isLoading) {
+      return (
+        <div className="group relative block overflow-hidden rounded-lg transition-all hover:scale-105">
+          <div className="aspect-[3/4]">
+            <Skeleton height="100%" />
+          </div>
+          <div className="relative bottom-0 left-0 right-0 p-0 pt-2">
+            <Skeleton width={100} />
+          </div>
         </div>
-    )
-}
-
-
-export default AnimeCard;
+      );
+    }
+  
+    return (
+      <Link
+        href={`/anime/${anime.id}/${formattedTitle}`}
+        className="group relative block overflow-hidden rounded-lg transition-all hover:scale-105"
+      >
+        <div className="aspect-[3/4] relative">
+          <Image
+            src={anime.coverImage}
+            alt={anime.title_romaji}
+            fill
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 300px"
+          />
+          <div className="absolute inset-0 bg-black/40 transition-opacity group-hover:opacity-0" />
+        </div>
+        <div className="relative bottom-0 left-0 right-0 p-0 pt-2">
+          <div className="flex items-center gap-2">
+            {anime.status === 'Airing' && (
+              <Circle className="h-2 w-2 fill-[#84CC16] text-[#84CC16]" />
+            )}
+            <h3 className="font-poppins font-bold text-sm text-[#9599b7] line-clamp-2">
+              {anime.title_romaji}
+            </h3>
+          </div>
+        </div>
+      </Link>
+    );
+  }
+  
