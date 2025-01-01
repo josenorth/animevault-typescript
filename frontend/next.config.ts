@@ -6,7 +6,8 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       "s4.anilist.co",
-      "www.youtube.com"
+      "www.youtube.com",
+      "img1.ak.crunchyroll.com"
     ],
   },
   async rewrites() {

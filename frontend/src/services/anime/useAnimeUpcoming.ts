@@ -14,11 +14,9 @@ const fetchAnimeUpcoming = async (): Promise<Anime[]> => {
 }
 
 export const useAnimeUpcoming = () => {
-  return useQuery({
-    queryKey: ['upcoming-next-season'],
-    queryFn: fetchAnimeUpcoming,
+  return useQuery(['upcoming'], fetchAnimeUpcoming, {
     staleTime: 1000 * 60 * 5, // 5 minutos
-    gcTime: 1000 * 60 * 10, // 10 minutos
+    cacheTime: 1000 * 60 * 10, // 10 minutos
     refetchOnWindowFocus: false,
   })
 }

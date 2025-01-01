@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Search } from 'lucide-react'
 
 const Navbar = () => {
   const [prevScrollPos, setPrevScrollPos] = useState(0)
@@ -33,7 +32,7 @@ const Navbar = () => {
       >
         <div className="container mx-auto px-28">
           <div className="flex justify-between items-center py-4">
-            <Link href="/" className="text-2xl font-bold font-poppins text-[#84CC16]">
+            <Link href="/" className="text-2xl font-bold font-poppins text-[#84CC16]" shallow={true}>
               AnimeVault
             </Link>
             <div className="flex items-center space-x-4">

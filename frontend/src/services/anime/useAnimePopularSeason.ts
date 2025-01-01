@@ -13,12 +13,15 @@ const fetchAnimePopularSeason = async (): Promise<Anime[]> => {
   return data
 }
 
+
 export const useAnimePopularSeason = () => {
-  return useQuery({
-    queryKey: ['popular-season'],
-    queryFn: fetchAnimePopularSeason,
+  return useQuery(['popular-season'], fetchAnimePopularSeason, {
     staleTime: 1000 * 60 * 5, // 5 minutos
-    gcTime: 1000 * 60 * 10, // 10 minutos
+    cacheTime: 1000 * 60 * 10, // 10 minutos
     refetchOnWindowFocus: false,
   })
 }
+
+
+
+  

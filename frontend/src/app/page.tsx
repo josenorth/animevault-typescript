@@ -4,6 +4,8 @@ import Image from 'next/image'
 import { Search, BookOpen, Tv, Star } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import { useAnimeTop } from '@/services/anime/useAnimeTop'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 const featuredAnime = [
   { id: 1, title: 'Attack on Titan', image: '/placeholder.svg?height=400&width=300', rating: 9.0 },
@@ -36,7 +38,13 @@ console.log(topAnime)
               <Search className="w-6 h-6" />
             </button>
           </div>
+          <Button>
+          <Link href="/search/anime" shallow={true}>Dashboard</Link>;
+
+          </Button>
+        
         </div>
+      
       </section>
 
       {/* Features Section */}

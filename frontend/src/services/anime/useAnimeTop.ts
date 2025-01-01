@@ -1,5 +1,3 @@
-'use client'
-
 import { useQuery } from '@tanstack/react-query'
 import { Anime } from '../../types/anime/Anime'
 
@@ -16,10 +14,9 @@ const fetchAnimeTop = async (): Promise<Anime[]> => {
 }
 
 export const useAnimeTop = () => {
-  return useQuery({
-    queryKey: ['top-animes'],
-    queryFn: fetchAnimeTop,
+  return useQuery(['top-animes'], fetchAnimeTop, {
     staleTime: 1000 * 60 * 5, // 5 minutos
-    gcTime: 1000 * 60 * 10, // 10 minutos
+    cacheTime: 1000 * 60 * 10, // 10 minutos
+    refetchOnWindowFocus: false,
   })
 }

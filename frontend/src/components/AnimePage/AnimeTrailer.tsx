@@ -1,3 +1,5 @@
+'use client'
+
 import { motion } from 'framer-motion'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Trailer } from '@/types/anime/Trailer'
