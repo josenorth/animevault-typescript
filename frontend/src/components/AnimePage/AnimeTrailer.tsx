@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Trailer } from '@/types/anime/Trailer'
+import ReactPlayer from 'react-player/youtube'
 
 interface AnimeTrailerProps {
   trailer?: Trailer; // Hacer que el trailer sea opcional
@@ -22,13 +23,13 @@ export function AnimeTrailer({ trailer }: AnimeTrailerProps) {
     >
       <h3 className="text-xl font-semibold mb-4 text-[#84CC16]">Trailer</h3>
       <AspectRatio ratio={16 / 9}>
-        <iframe
-          src={`https://www.youtube.com/embed/${trailer.trailer_id}`}
-          title="Anime Trailer"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
+        <ReactPlayer
+          url={`https://www.youtube.com/watch?v=${trailer.trailer_id}`}
+          width="100%"
+          height="100%"
+          controls
           className="w-full h-full rounded-md"
-        ></iframe>
+        />
       </AspectRatio>
     </motion.div>
   );

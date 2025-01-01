@@ -15,13 +15,13 @@ export function AnimeStudios({ studios }: AnimeStudiosProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.8 }}
-      className="dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8"
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="dark:bg-gray-800 rounded-lg shadow-md mb-2"
     >
       <h3 className="text-xl font-semibold mb-4 text-[#84CC16]">Studios</h3>
       <ul className="space-y-2">
         {sortedStudios.map((studio) => (
-          <li key={studio.id} className="flex items-center">
+          <li key={`${studio.id}-${studio.isMain}`} className="flex items-center">
             <span className="text-white dark:text-gray-200">{studio.name}</span>
             {studio.isMain && (
               <span className="ml-2 px-2 py-1 text-xs font-medium bg-[#065F46] text-[#84CC16] rounded-full">

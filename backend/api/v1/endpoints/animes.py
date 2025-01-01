@@ -19,6 +19,8 @@ from models.v1.anime.external_link import AnimeExternalLink
 from schemas.v1.anime_details import AnimeDetails
 from schemas.v1.anime_trailer import AnimeTrailer
 from schemas.v1.external_link import ExternalLink
+from models.v1.shared.external_site import ExternalSite as ExternalSiteModel
+from schemas.v1.shared.external_site import ExternalSite as ExternalSite
 from schemas.v1.studio import StudioSchema
 from schemas.v1.streaming_link import StreamingLink
 from models.v1.anime.streaming_link import StreamingLink as StreamingLinkModel
@@ -254,6 +256,31 @@ def get_anime_episodes(anime_id: int, db: Session = Depends(get_db)):
     ).order_by(StreamingLinkModel.created_at.asc()).all()
 
     return episodes
+
+# endpoint para traer los external links de un anime usando external site
+@router.get("/{anime_id}/external-links", response_model=List[ExternalLink], summary="Get Anime External Links", description="Retrieve all external links for a specific anime.")
+def get_anime_external_links(anime_id: int, db: Session = Depends(get_db)):
+    anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
+    if anime is None:
+        raise HTTPException(status_code=404, detail="Anime not found")
+
+    external_links = db.query(AnimeExternalLink).filter(AnimeExternalLink.anime_id == anime_id).all()
+
+    result = []
+    for link in external_links:
+        site = db.query(ExternalSiteModel).filter(ExternalSiteModel.id == link.site_id).first()
+        if site:
+            result.append(
+                ExternalLink(
+                    id=link.id,
+                    anime_id=link.anime_id,
+                    site_id=link.site_id,
+                    url=link.url,
+                    external_site=ExternalSite.model_validate(site)  # Usa el esquema de Pydantic para la validación
+                )
+            )
+
+    return result
 
 from crud.anime import get_relations_by_anime_id
 from schemas.v1.shared.relations import RelationSchema, RelatedAnimeSchema, RelatedMangaSchema

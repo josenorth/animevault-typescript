@@ -1,31 +1,30 @@
 import { motion } from 'framer-motion'
-import { Anime } from '@/types/anime/Anime'
-import Image from 'next/image'
+import { Manga } from '@/types/manga/Manga'
 
-interface AnimeHeaderProps {
-  anime: Anime
+interface MangaHeaderProps {
+  manga: Manga
 }
 
-export function AnimeHeader({ anime }: AnimeHeaderProps) {
+export function MangaHeader({ manga }: MangaHeaderProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
       className="relative h-64 md:h-96 overflow-hidden"
     >
-      <Image
-        src={anime.bannerImage || '/anime-banner-placeholder.png'}
-        alt={anime.title_english || 'Anime Banner'}
-        fill
+      <img
+        src={manga.bannerImage || '/placeholder.svg?height=384&width=1920'}
+        alt={manga.title_english || 'Manga Banner'}
         className="w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-end">
-        <div className="container mx-auto px-28 py-8">
+        <div className="container mx-auto px-4 py-8">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-2">
-            {anime.title_english}
+            {manga.title_english}
           </h1>
           <h2 className="text-xl md:text-2xl text-gray-300">
-            {anime.title_romaji} / {anime.native}
+            {manga.title_romaji} / {manga.title_native}
           </h2>
         </div>
       </div>

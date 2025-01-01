@@ -1,4 +1,3 @@
-import TanstackProvider from '@/providers/TanstackProvider'
 import './globals.css'
 import { Inter } from 'next/font/google'
 import Navbar from '@/components/Navbar'
@@ -20,9 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Navbar />
-        <TanstackProvider>
           {children}
-        </TanstackProvider>
         <Footer />
       </body>
     </html>

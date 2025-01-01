@@ -1,26 +1,27 @@
 import { motion } from 'framer-motion';
-import { Relation } from '@/types/anime/Relation';
+import { RelatedMedia } from '@/types/manga/Relation';
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface AnimeRelationsProps {
-  relations?: Relation[]; // Puede ser undefined mientras se cargan los datos
+interface MangaRelationsProps {
+  relations: RelatedMedia[];
 }
 
 function formatTitleWithHyphen(title: string): string {
   return title.trim().replace(/\s+/g, '-');
 }
 
-export function AnimeRelations({ relations }: AnimeRelationsProps) {
+export function MangaRelations({ relations }: MangaRelationsProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.4 }}
-      className="bg-[#151f2e] rounded-lg shadow-md p-6 mt-8 mb-8"
+      className="bg-[#151f2e] rounded-lg shadow-md p-6 mb-8"
     >
       <h3 className="text-xl font-semibold mb-6 text-white">Relations</h3>
       <div className="flex flex-wrap -mx-2">
+
         {relations && relations.map((relation) => {
           const isAnime = !!relation.related_anime;
           const related = isAnime ? relation.related_anime : relation.related_manga;
