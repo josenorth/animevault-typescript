@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { ExternalLink as ExternalLinkType } from '@/types/shared/ExternalLink'
 import Image from 'next/image'
+import { IoIosLink } from "react-icons/io";
 
 interface AnimeExternalLinksProps {
   links: ExternalLinkType[];
@@ -21,7 +22,7 @@ export function AnimeExternalLinks({ links }: AnimeExternalLinksProps) {
           <Button
             key={link.id}
             variant="outline"
-            className={`w-full justify-start transition-colors duration-800 ease-in-out ${link.external_site.name === 'Official Site' ? '!bg-slate-600 hover:!text-[#84CC16]' : 'hover:bg-[var(--hover-color)]'}`}
+            className={`w-full pb-6 pt-6 justify-start transition-colors duration-800 ease-in-out ${link.external_site.name === 'Official Site' ? '!bg-slate-600 hover:!text-[#84CC16]' : 'hover:bg-[var(--hover-color)]'}`}
             asChild
             style={{ '--hover-color': link.external_site.color } as React.CSSProperties}
           >
@@ -32,7 +33,7 @@ export function AnimeExternalLinks({ links }: AnimeExternalLinksProps) {
               className={`flex items-center transition-colors duration-800 ease-in-out !text-white bg-slate-600 border-none ${link.external_site.name === 'Official Site' ? 'hover:text-[var(--hover-color)]' : 'hover:bg-[var(--hover-color)]'}`}
               style={{ color: link.external_site.color }}
             >
-              {link.external_site.icon && (
+              {link.external_site.icon ? (
                 <div
                   className={`mr-2 h-8 w-8 flex items-center justify-center rounded`}
                   style={{ backgroundColor: link.external_site.color }}
@@ -45,6 +46,15 @@ export function AnimeExternalLinks({ links }: AnimeExternalLinksProps) {
                     className="h-4 w-4"
                   />
                 </div>
+              ) : (
+                link.external_site.name === 'Official Site' && (
+                  <div
+                    className={`mr-2 h-8 w-8 flex items-center justify-center rounded`}
+                    style={{ backgroundColor: link.external_site.color }}
+                  >
+                    <IoIosLink className="!h-8 !w-8 text-white bg-[#065F46] rounded p-1" />
+                  </div>
+                )
               )}
               {link.external_site.name}
             </a>

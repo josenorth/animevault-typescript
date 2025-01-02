@@ -18,7 +18,6 @@ import { Episode } from '@/types/anime/Episode';
 import { Trailer } from '@/types/anime/Trailer';
 import { ExternalLink } from '@/types/shared/ExternalLink';
 
-
 const initialAnime: Anime = {
   id: 0,
   title_romaji: '',
@@ -43,6 +42,14 @@ const initialAnime: Anime = {
   studios: []
 };
 
+const fetchData = async (endpoint: string) => {
+  const res = await fetch(`http://localhost:3000/api/v1/animes/${endpoint}`, {
+    cache: 'no-store'
+  });
+  if (!res.ok) throw new Error('Failed to fetch data');
+  return res.json();
+};
+
 const AnimePage = () => {
   const { anime_id } = useParams();
   const [anime, setAnime] = useState<Anime>(initialAnime);
@@ -59,8 +66,7 @@ const AnimePage = () => {
         setAnime(JSON.parse(cachedAnime));
         setLoading(false);
       } else {
-        fetch(`/api/v1/animes/${anime_id}`)
-          .then(response => response.json())
+        fetchData(`${anime_id}`)
           .then(data => {
             setAnime(data);
             localStorage.setItem(`anime_${anime_id}`, JSON.stringify(data));
@@ -72,38 +78,21 @@ const AnimePage = () => {
           });
       }
 
-      fetch(`/api/v1/animes/${anime_id}/relations`)
-        .then(response => response.json())
-        .then(data => {
-          setRelations(data);
-        })
-        .catch(error => {
-          console.error('Error fetching anime relations:', error);
-        });
-        fetch(`/api/v1/animes/${anime_id}/episodes`)
-        .then(response => response.json())
-        .then(data => {
-          setEpisodes(data);
-        })
-        .catch(error => {
-          console.error('Error fetching anime relations:', error);
-        });
-        fetch(`/api/v1/animes/${anime_id}/trailer`)
-        .then(response => response.json())
-        .then(data => {
-          setTrailer(data);
-        })
-        .catch(error => {
-          console.error('Error fetching anime relations:', error);
-        });
-        fetch(`/api/v1/animes/${anime_id}/external-links`)
-        .then(response => response.json())
-        .then(data => {
-          setExternalLinks(data);
-        })
-        .catch(error => {
-          console.error('Error fetching anime relations:', error);
-        });
+      Promise.all([
+        fetchData(`${anime_id}/relations`),
+        fetchData(`${anime_id}/episodes`),
+        fetchData(`${anime_id}/trailer`),
+        fetchData(`${anime_id}/external-links`)
+      ])
+      .then(([relationsData, episodesData, trailerData, externalLinksData]) => {
+        setRelations(relationsData);
+        setEpisodes(episodesData);
+        setTrailer(trailerData);
+        setExternalLinks(externalLinksData);
+      })
+      .catch(error => {
+        console.error('Error fetching additional data:', error);
+      });
     }
   }, [anime_id]);
 
