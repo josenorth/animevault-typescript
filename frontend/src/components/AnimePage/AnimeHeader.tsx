@@ -18,6 +18,8 @@ export function AnimeHeader({ anime }: AnimeHeaderProps) {
         alt={anime.title_english || 'Anime Banner'}
         fill
         className="w-full h-full object-cover"
+        placeholder="blur"
+        blurDataURL="/anime-banner-placeholder.png" // Placeholder mientras se carga la imagen
       />
       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-end">
         <div className="container mx-auto px-28 py-8">
@@ -32,4 +34,3 @@ export function AnimeHeader({ anime }: AnimeHeaderProps) {
     </motion.div>
   )
 }
-

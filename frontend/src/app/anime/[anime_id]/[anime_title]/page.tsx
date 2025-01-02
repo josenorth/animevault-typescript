@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import useSWR from 'swr';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { AnimeHeader } from '@/components/AnimePage/AnimeHeader';
@@ -42,62 +42,25 @@ const initialAnime: Anime = {
   studios: []
 };
 
-const fetchData = async (endpoint: string) => {
-  const res = await fetch(`http://localhost:3000/api/v1/animes/${endpoint}`, {
-    cache: 'no-store'
-  });
-  if (!res.ok) throw new Error('Failed to fetch data');
-  return res.json();
-};
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 const AnimePage = () => {
   const { anime_id } = useParams();
-  const [anime, setAnime] = useState<Anime>(initialAnime);
-  const [relations, setRelations] = useState<Relation[]>([]);
-  const [episodes, setEpisodes] = useState<Episode[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [trailer, setTrailer] = useState<Trailer | undefined>(undefined);
-  const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
+  const { data: anime, error: animeError } = useSWR(anime_id ? `http://localhost:3000/api/v1/animes/${anime_id}` : null, fetcher, { fallbackData: initialAnime });
+  const { data: relations, error: relationsError } = useSWR(anime_id ? `http://localhost:3000/api/v1/animes/${anime_id}/relations` : null, fetcher);
+  const { data: episodes, error: episodesError } = useSWR(anime_id ? `http://localhost:3000/api/v1/animes/${anime_id}/episodes` : null, fetcher);
+  const { data: trailer, error: trailerError } = useSWR(anime_id ? `http://localhost:3000/api/v1/animes/${anime_id}/trailer` : null, fetcher);
+  const { data: externalLinks, error: externalLinksError } = useSWR(anime_id ? `http://localhost:3000/api/v1/animes/${anime_id}/external-links` : null, fetcher);
 
-  useEffect(() => {
-    if (anime_id) {
-      const cachedAnime = localStorage.getItem(`anime_${anime_id}`);
-      if (cachedAnime) {
-        setAnime(JSON.parse(cachedAnime));
-        setLoading(false);
-      } else {
-        fetchData(`${anime_id}`)
-          .then(data => {
-            setAnime(data);
-            localStorage.setItem(`anime_${anime_id}`, JSON.stringify(data));
-            setLoading(false);
-          })
-          .catch(error => {
-            console.error('Error fetching anime:', error);
-            setLoading(false);
-          });
-      }
+  const isLoading = !anime || !relations || !episodes || !trailer || !externalLinks;
+  const isError = animeError || relationsError || episodesError || trailerError || externalLinksError;
 
-      Promise.all([
-        fetchData(`${anime_id}/relations`),
-        fetchData(`${anime_id}/episodes`),
-        fetchData(`${anime_id}/trailer`),
-        fetchData(`${anime_id}/external-links`)
-      ])
-      .then(([relationsData, episodesData, trailerData, externalLinksData]) => {
-        setRelations(relationsData);
-        setEpisodes(episodesData);
-        setTrailer(trailerData);
-        setExternalLinks(externalLinksData);
-      })
-      .catch(error => {
-        console.error('Error fetching additional data:', error);
-      });
-    }
-  }, [anime_id]);
-
-  if (loading) {
+  if (isLoading) {
     return <Spinner />;
+  }
+
+  if (isError) {
+    return <div>Error loading data</div>;
   }
 
   return (
