@@ -13,10 +13,10 @@ import { AnimeTrailer } from '@/components/AnimePage/AnimeTrailer';
 import { AnimeExternalLinks } from '@/components/AnimePage/AnimeExternalLink';
 import Spinner from '@/components/Spinner';
 import { Anime } from '@/types/anime/Anime';
-import { Relation } from '@/types/anime/Relation';
-import { Episode } from '@/types/anime/Episode';
-import { Trailer } from '@/types/anime/Trailer';
-import { ExternalLink } from '@/types/shared/ExternalLink';
+// import { Relation } from '@/types/anime/Relation';
+// import { Episode } from '@/types/anime/Episode';
+// import { Trailer } from '@/types/anime/Trailer';
+// import { ExternalLink } from '@/types/shared/ExternalLink';
 
 const initialAnime: Anime = {
   id: 0,

@@ -50,7 +50,6 @@ services:
       TZ: ${TZ}  # Puedes configurar TZ aquí también si lo deseas
     volumes:
       - ./frontend:/app
-      - /app/node_modules
       - /etc/timezone:/etc/timezone:ro  # Monta el archivo de zona horaria
       - /etc/localtime:/etc/localtime:ro  # Monta el archivo de localtime
 

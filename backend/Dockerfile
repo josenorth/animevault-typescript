@@ -23,4 +23,4 @@ RUN apt-get update && apt-get install -y iputils-ping && rm -rf /var/lib/apt/lis
 EXPOSE 8000
 
 # Comando para ejecutar la aplicación en modo desarrollo con Uvicorn
-CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["fastapi", "run", "main.py"]
