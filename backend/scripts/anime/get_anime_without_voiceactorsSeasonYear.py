@@ -47,6 +47,7 @@ query GetAnimes($page: Int, $perPage: Int) {
             type: ANIME
         ) {
                 id
+                idMal
                 title {
                     romaji
                     english
@@ -156,6 +157,7 @@ def insert_anime(data):
             anime_format = anime_data.get('format')  # Proporcionar un valor predeterminado para 'format'
 
             if existing_anime:
+                existing_anime.id_mal = anime_data['idMal']
                 existing_anime.title_romaji = anime_data['title']['romaji']
                 existing_anime.title_english = anime_data['title'].get('english')
                 existing_anime.native = anime_data['title'].get('native')
@@ -178,6 +180,7 @@ def insert_anime(data):
             else:
                 anime = Anime(
                     id=anime_data['id'],
+                    id_mal=anime_data['idMal'],
                     title_romaji=anime_data['title']['romaji'],
                     title_english=anime_data['title'].get('english'),
                     native=anime_data['title'].get('native'),

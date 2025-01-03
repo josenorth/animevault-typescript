@@ -33,7 +33,7 @@ class AnimeUpdate(AnimeBase):
 
 class Anime(AnimeBase):
     season: Optional[str] 
-    genres: List[GenreSchema]  # Usa el schema de Genre en lugar de IDs
+    genres: List[GenreSchema]
     studios: List[StudioSchema]
 
 

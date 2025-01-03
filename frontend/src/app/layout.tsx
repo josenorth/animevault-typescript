@@ -1,10 +1,34 @@
 import './globals.css'
-import { Inter } from 'next/font/google'
+import { Roboto, Poppins, Montserrat } from 'next/font/google'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Providers from './providers'
 
-const inter = Inter({ subsets: ['latin'] })
+// agregar las fuentes de Google Fonts
+const montserrat = Montserrat({ 
+  subsets: ['latin'], 
+  weight: ['400', '600', '700', '800'],
+  style: ['normal'],
+  variable: '--font-montserrat',
+  display: 'swap',
+})
+
+const poppins = Poppins({
+  weight: ['400', '600', '700', '800'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  variable: '--font-poppins',
+  display: 'swap',
+})
+
+
+const roboto = Roboto({
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  variable: '--font-roboto',
+  display: 'swap',
+})
 
 export const metadata = {
   title: 'AnimeVault',
@@ -17,8 +41,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={`${poppins.variable} ${roboto.variable} ${montserrat.variable}`}>
+      <body >
         <Navbar />
         <Providers>{children}</Providers>
         <Footer />

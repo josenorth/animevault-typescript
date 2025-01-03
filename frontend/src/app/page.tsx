@@ -18,8 +18,8 @@ export default function Home() {
       {/* Hero Section */}
       <section className="bg-[#1E293B] text-white pt-28 pb-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4 font-poppins">Discover Your Next Favorite Anime or Manga</h2>
-          <p className="text-xl mb-8 font-open-sans text-[#F9FAFB]">Explore our vast database of anime and manga metadata</p>
+          <h2 className="text-4xl font-bold mb-4 font-roboto">Discover Your Next Favorite Anime or Manga</h2>
+          <p className="text-xl mb-8 font- text-[#F9FAFB]">Explore our vast database of anime and manga metadata</p>
           <div className="flex justify-center">
             <input 
               type="text" 

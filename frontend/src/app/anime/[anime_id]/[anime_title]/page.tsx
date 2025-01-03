@@ -1,6 +1,6 @@
 'use client'
 
-import useSWR from 'swr';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { AnimeHeader } from '@/components/AnimePage/AnimeHeader';
@@ -12,48 +12,46 @@ import { AnimeEpisodePreview } from '@/components/AnimePage/AnimeEpisode';
 import { AnimeTrailer } from '@/components/AnimePage/AnimeTrailer';
 import { AnimeExternalLinks } from '@/components/AnimePage/AnimeExternalLink';
 import Spinner from '@/components/Spinner';
-import { Anime } from '@/types/anime/Anime';
 // import { Relation } from '@/types/anime/Relation';
 // import { Episode } from '@/types/anime/Episode';
 // import { Trailer } from '@/types/anime/Trailer';
 // import { ExternalLink } from '@/types/shared/ExternalLink';
 
-const initialAnime: Anime = {
-  id: 0,
-  title_romaji: '',
-  title_english: '',
-  native: '',
-  description: '',
-  coverImage: '',
-  bannerImage: '',
-  episode_count: 0,
-  episode_duration: 0,
-  average_score: 0,
-  popularity: 0,
-  season_id: 0,
-  start_date: '',
-  end_date: '',
-  seasonYear: 0,
-  format: '',
-  status: '',
-  source: '',
-  season: '',
-  genres: [],
-  studios: []
-};
 
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+
+const fetcher = async (url: string) => {
+  const res = await fetch(process.env.NEXT_PUBLIC_EXTERNAL_API_URL + url);
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return res.json();
+};
 
 const AnimePage = () => {
   const { anime_id } = useParams();
-  const { data: anime, error: animeError } = useSWR(anime_id ? `http://localhost:3000/api/v1/animes/${anime_id}` : null, fetcher, { fallbackData: initialAnime });
-  const { data: relations, error: relationsError } = useSWR(anime_id ? `http://localhost:3000/api/v1/animes/${anime_id}/relations` : null, fetcher);
-  const { data: episodes, error: episodesError } = useSWR(anime_id ? `http://localhost:3000/api/v1/animes/${anime_id}/episodes` : null, fetcher);
-  const { data: trailer, error: trailerError } = useSWR(anime_id ? `http://localhost:3000/api/v1/animes/${anime_id}/trailer` : null, fetcher);
-  const { data: externalLinks, error: externalLinksError } = useSWR(anime_id ? `http://localhost:3000/api/v1/animes/${anime_id}/external-links` : null, fetcher);
+  const animeQuery = useQuery({
+    queryKey: ['anime', anime_id],
+    queryFn: () => fetcher(`/animes/${anime_id}`)
+  });
+  const relationsQuery = useQuery({
+    queryKey: ['relations', anime_id],
+    queryFn: () => fetcher(`/animes/${anime_id}/relations`)
+  });
+  const episodesQuery = useQuery({
+    queryKey: ['episodes', anime_id],
+    queryFn: () => fetcher(`/animes/${anime_id}/episodes`)
+  });
+  const trailerQuery = useQuery({
+    queryKey: ['trailer', anime_id],
+    queryFn: () => fetcher(`/animes/${anime_id}/trailer`)
+  });
+  const externalLinksQuery = useQuery({
+    queryKey: ['externalLinks', anime_id],
+    queryFn: () => fetcher(`/animes/${anime_id}/external-links`)
+  });
 
-  const isLoading = !anime || !relations || !episodes || !trailer || !externalLinks;
-  const isError = animeError || relationsError || episodesError || trailerError || externalLinksError;
+  const isLoading = animeQuery.isLoading || relationsQuery.isLoading || episodesQuery.isLoading || trailerQuery.isLoading || externalLinksQuery.isLoading;
+  const isError = animeQuery.isError || relationsQuery.isError || episodesQuery.isError || trailerQuery.isError || externalLinksQuery.isError;
 
   if (isLoading) {
     return <Spinner />;
@@ -62,6 +60,12 @@ const AnimePage = () => {
   if (isError) {
     return <div>Error loading data</div>;
   }
+
+  const anime = animeQuery.data;
+  const relations = relationsQuery.data;
+  const episodes = episodesQuery.data;
+  const trailer = trailerQuery.data;
+  const externalLinks = externalLinksQuery.data;
 
   return (
     <motion.div className="min-h-screen bg-[#0b1622]">

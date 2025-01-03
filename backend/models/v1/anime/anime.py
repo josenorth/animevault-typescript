@@ -18,6 +18,7 @@ class Anime(Base):
     __table_args__ = {'schema': 'animevault'}
 
     id = Column(Integer, primary_key=True, index=True)
+    id_mal = Column(Integer, nullable=True)
     title_romaji = Column(String, nullable=False)
     title_english = Column(String, nullable=True)
     native = Column(String, nullable=True)
