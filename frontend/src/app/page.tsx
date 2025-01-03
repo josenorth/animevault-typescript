@@ -6,7 +6,7 @@ import { Search, BookOpen, Tv, Star } from 'lucide-react'
 const featuredAnime = [
   { id: 1, title: 'Attack on Titan', image: '/placeholder.svg?height=400&width=300', rating: 9.0 },
   { id: 2, title: 'My Hero Academia', image: '/placeholder.svg?height=400&width=300', rating: 8.5 },
-  { id: 3, title: 'Demon Slayer', image: '/placeholder.svg?height=400&width=300', rating: 8.7 },
+  { id: 3, title: 'Demon Slayer', image: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx171018-2ldCj6QywuOa.jpg', rating: 8.7 },
 ]
 
 
@@ -88,7 +88,7 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode, titl
 function AnimeCard({ title, image, rating }: { title: string, image: string, rating: number }) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <Image src={image} alt={title} width={300} height={400} className="w-full" />
+      <Image src={image} alt={title} width={500} height={500} className="w-full" />
       <div className="p-4">
         <h4 className="text-xl font-semibold mb-2 font-poppins text-[#111827]">{title}</h4>
         <div className="flex items-center">

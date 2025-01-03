@@ -2,12 +2,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Circle } from 'lucide-react'
 import { Anime } from '@/types/anime/Anime'
-import Skeleton from 'react-loading-skeleton'
-import 'react-loading-skeleton/dist/skeleton.css'
 
 interface AnimeCardProps {
   anime: Anime
-  isLoading: boolean
 }
 
 export const defaultAnime: Anime = {
@@ -34,25 +31,12 @@ export const defaultAnime: Anime = {
   source: ''
 }
 
-export default function AnimeCard({ anime, isLoading }: AnimeCardProps) {
+export default function AnimeCard({ anime }: AnimeCardProps) {
     function formatTitleWithHyphen(title: string): string {
       return title.trim().replace(/\s+/g, '-');
     }
   
     const formattedTitle = formatTitleWithHyphen(anime.title_romaji);
-  
-    if (isLoading) {
-      return (
-        <div className="group relative block overflow-hidden rounded-lg transition-all hover:scale-105">
-          <div className="aspect-[3/4]">
-            <Skeleton height="100%" />
-          </div>
-          <div className="relative bottom-0 left-0 right-0 p-0 pt-2">
-            <Skeleton width={100} />
-          </div>
-        </div>
-      );
-    }
   
     return (
       <Link
