@@ -13,3 +13,4 @@ from ..shared.external_site import ExternalSite
 from ..manga.manga_genres import manga_genres
 from .streaming_link import StreamingLink
 from ..shared.relations import Relations 
+from .anime_news import AnimeNews

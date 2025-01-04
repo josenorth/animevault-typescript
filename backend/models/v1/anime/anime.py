@@ -11,6 +11,7 @@ from .external_link import AnimeExternalLink
 from .anime_character import AnimeCharacter
 from .streaming_link import StreamingLink
 from ..shared.relations import Relations
+from .anime_news import AnimeNews
 from database.db import Base
 
 class Anime(Base):
@@ -51,3 +52,4 @@ class Anime(Base):
     
     relations = relationship(Relations, foreign_keys=[Relations.anime_id], back_populates="anime")
     related_relations = relationship(Relations, foreign_keys=[Relations.related_anime_id], back_populates="related_anime")
+    news = relationship(AnimeNews, back_populates="anime", cascade="all, delete-orphan")

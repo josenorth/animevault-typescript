@@ -7,6 +7,7 @@ interface FilterDropdownProps {
   options: string[]
   value: string
   onChange: (value: string) => void
+  onRemove: () => void
 }
 
 export default function FilterDropdown({ label, options, value, onChange }: FilterDropdownProps) {
@@ -28,4 +29,3 @@ export default function FilterDropdown({ label, options, value, onChange }: Filt
     </div>
   )
 }
-

@@ -18,8 +18,8 @@ export default function Home() {
       {/* Hero Section */}
       <section className="bg-[#1E293B] text-white pt-28 pb-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4 font-roboto">Discover Your Next Favorite Anime or Manga</h2>
-          <p className="text-xl mb-8 font- text-[#F9FAFB]">Explore our vast database of anime and manga metadata</p>
+          <h2 className="text-4xl font-bold mb-4 font-poppins">Discover Your Next Favorite Anime or Manga</h2>
+          <p className="text-xl mb-8 font-montserrat text-[#F9FAFB]">Explore our vast database of anime and manga metadata</p>
           <div className="flex justify-center">
             <input 
               type="text" 
@@ -79,8 +79,8 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode, titl
   return (
     <div className="bg-white p-6 rounded-lg shadow-md text-center">
       <div className="flex justify-center mb-4">{icon}</div>
-      <h4 className="text-xl font-semibold mb-2 font-poppins text-[#111827]">{title}</h4>
-      <p className="text-[#4B5563] font-open-sans">{description}</p>
+      <h4 className="text-xl font-semibold mb-2 font-montserrat text-[#111827]">{title}</h4>
+      <p className="text-[#4B5563] font-roboto">{description}</p>
     </div>
   )
 }

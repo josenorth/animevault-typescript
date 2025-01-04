@@ -26,6 +26,9 @@ from schemas.v1.streaming_link import StreamingLink
 from models.v1.anime.streaming_link import StreamingLink as StreamingLinkModel
 from models.v1.manga.manga import Manga as MangaModel
 from models.v1.anime.anime_studios import anime_studios
+from models.v1.anime.anime_news import AnimeNews as AnimeNewsModel
+from schemas.v1.anime_news import AnimeNews as AnimeNewsSchema
+from models.v1.shared.genre import Genre
 
 
 router = APIRouter()
@@ -144,6 +147,37 @@ def get_all_time_popular_animes(db: Session = Depends(get_db)):
     popular_animes = db.query(AnimeModel).join(AnimeTrendModel).order_by(AnimeTrendModel.popularity.desc()).limit(6).all()
     return [map_anime_with_studios(anime, db) for anime in popular_animes]
 
+# endpoint para filtrar los animes por nombre, generos, seasonYear, fromat y status con un limite de 20 resultados maximos por consulta
+from fastapi import Query
+
+@router.get("/filter", response_model=List[Anime])
+def filter_animes(
+    name: Optional[str] = None,
+    genres: Optional[List[str]] = Query(None),
+    seasonYear: Optional[int] = None,
+    format: Optional[str] = None,
+    status: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    query = db.query(AnimeModel)
+    if name:
+        query = query.filter(AnimeModel.title_romaji.ilike(f"%{name}%"))
+    if genres:
+        query = query.join(AnimeModel.genres).filter(Genre.name.in_(genres))
+    if seasonYear:
+        query = query.filter(AnimeModel.seasonYear == seasonYear)
+    if format:
+        query = query.filter(AnimeModel.format == format)
+    if status:
+        query = query.filter(AnimeModel.status == status)
+
+    offset = (page - 1) * limit
+    animes = query.offset(offset).limit(limit).all()
+    return [map_anime_with_studios(anime, db) for anime in animes]
+
+
 @router.get("/{anime_id}", response_model=Anime)
 def get_anime_by_id(anime_id: int, db: Session = Depends(get_db)):
     anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
@@ -196,6 +230,19 @@ def get_anime_details(anime_id: int, db: Session = Depends(get_db)):
     return AnimeCharacters(
         characters=characters
     )
+
+
+# endpont para traer las news de un anime, se usa el id y se busca por el id_mal
+@router.get("/{anime_id}/news", response_model=List[AnimeNewsSchema], summary="Get Anime News", description="Retrieve the news for a specific anime.")
+def get_anime_news(anime_id: int, db: Session = Depends(get_db)):
+    # Obtener el anime usando el id
+    anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
+    if anime is None:
+        raise HTTPException(status_code=404, detail="Anime not found")
+
+    # Usar el id_mal del anime para buscar en la tabla anime_news
+    news = db.query(AnimeNewsModel).filter(AnimeNewsModel.anime_id == anime.id_mal).all()
+    return [AnimeNewsSchema.model_validate(new) for new in news]
 
 # endpoint para traer los studios de un anime
 @router.get("/{anime_id}/studios", response_model=List[StudioSchema], summary="Get Anime Studios", description="Retrieve the list of studios for a specific anime.")

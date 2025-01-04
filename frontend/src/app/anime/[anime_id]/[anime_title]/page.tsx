@@ -11,6 +11,7 @@ import { AnimeRelations } from '@/components/AnimePage/AnimeRelations';
 import { AnimeEpisodePreview } from '@/components/AnimePage/AnimeEpisode';
 import { AnimeTrailer } from '@/components/AnimePage/AnimeTrailer';
 import { AnimeExternalLinks } from '@/components/AnimePage/AnimeExternalLink';
+import { AnimeNews } from '@/components/AnimePage/AnimeNews';
 import Spinner from '@/components/Spinner';
 // import { Relation } from '@/types/anime/Relation';
 // import { Episode } from '@/types/anime/Episode';
@@ -49,9 +50,13 @@ const AnimePage = () => {
     queryKey: ['externalLinks', anime_id],
     queryFn: () => fetcher(`/animes/${anime_id}/external-links`)
   });
+  const newsQuery = useQuery({
+    queryKey: ['news', anime_id],
+    queryFn: () => fetcher(`/animes/${anime_id}/news`)
+  });
 
-  const isLoading = animeQuery.isLoading || relationsQuery.isLoading || episodesQuery.isLoading || trailerQuery.isLoading || externalLinksQuery.isLoading;
-  const isError = animeQuery.isError || relationsQuery.isError || episodesQuery.isError || trailerQuery.isError || externalLinksQuery.isError;
+  const isLoading = animeQuery.isLoading || relationsQuery.isLoading || episodesQuery.isLoading || trailerQuery.isLoading || externalLinksQuery.isLoading || newsQuery.isLoading;
+  const isError = animeQuery.isError || relationsQuery.isError || episodesQuery.isError || trailerQuery.isError || externalLinksQuery.isError || newsQuery.isError;
 
   if (isLoading) {
     return <Spinner />;
@@ -66,6 +71,7 @@ const AnimePage = () => {
   const episodes = episodesQuery.data;
   const trailer = trailerQuery.data;
   const externalLinks = externalLinksQuery.data;
+  const news = newsQuery.data.slice(0, 3);
 
   return (
     <motion.div className="min-h-screen bg-[#0b1622]">
@@ -77,11 +83,13 @@ const AnimePage = () => {
             <AnimeDescription description={anime.description} />
             <AnimeEpisodePreview episodes={episodes} />
             <AnimeTrailer trailer={trailer} />
+            <AnimeNews news={news} />
           </div>
           <div>
             <AnimeStudios studios={anime.studios} />
             <AnimeExternalLinks links={externalLinks} />
             <AnimeRelations relations={relations} />
+
             {/* Otros componentes o información adicional */}
           </div>
         </div>
