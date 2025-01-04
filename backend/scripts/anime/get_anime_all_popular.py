@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 import time
 import argparse
 from sqlalchemy.orm import sessionmaker
-from database.db import engine
+from database.db_local import engine
 from models.v1.anime.anime_trend import AnimeTrend
 from models.v1.anime import Anime
 from datetime import datetime

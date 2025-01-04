@@ -32,46 +32,57 @@ const AnimePage = () => {
   const { anime_id } = useParams();
   const animeQuery = useQuery({
     queryKey: ['anime', anime_id],
-    queryFn: () => fetcher(`/animes/${anime_id}`)
+    queryFn: () => fetcher(`/animes/${anime_id}`),
+    retry: false // No reintentar si falla
   });
+  const queryOptions = {
+    enabled: !animeQuery.isLoading && !animeQuery.isError, // Solo ejecutar si anime cargó exitosamente
+    retry: false, // No reintentar
+  };
   const relationsQuery = useQuery({
     queryKey: ['relations', anime_id],
-    queryFn: () => fetcher(`/animes/${anime_id}/relations`)
+    queryFn: () => fetcher(`/animes/${anime_id}/relations`),
+    ...queryOptions
   });
+
   const episodesQuery = useQuery({
     queryKey: ['episodes', anime_id],
-    queryFn: () => fetcher(`/animes/${anime_id}/episodes`)
+    queryFn: () => fetcher(`/animes/${anime_id}/episodes`),
+    ...queryOptions
   });
+
   const trailerQuery = useQuery({
     queryKey: ['trailer', anime_id],
-    queryFn: () => fetcher(`/animes/${anime_id}/trailer`)
+    queryFn: () => fetcher(`/animes/${anime_id}/trailer`),
+    ...queryOptions
   });
+
   const externalLinksQuery = useQuery({
     queryKey: ['externalLinks', anime_id],
-    queryFn: () => fetcher(`/animes/${anime_id}/external-links`)
+    queryFn: () => fetcher(`/animes/${anime_id}/external-links`),
+    ...queryOptions
   });
+
   const newsQuery = useQuery({
     queryKey: ['news', anime_id],
-    queryFn: () => fetcher(`/animes/${anime_id}/news`)
+    queryFn: () => fetcher(`/animes/${anime_id}/news`),
+    ...queryOptions
   });
 
-  const isLoading = animeQuery.isLoading || relationsQuery.isLoading || episodesQuery.isLoading || trailerQuery.isLoading || externalLinksQuery.isLoading || newsQuery.isLoading;
-  const isError = animeQuery.isError || relationsQuery.isError || episodesQuery.isError || trailerQuery.isError || externalLinksQuery.isError || newsQuery.isError;
-
-  if (isLoading) {
+  if (animeQuery.isLoading) {
     return <Spinner />;
   }
 
-  if (isError) {
-    return <div>Error loading data</div>;
+  if (animeQuery.isError) {
+    return <div>Error loading anime data</div>;
   }
 
   const anime = animeQuery.data;
   const relations = relationsQuery.data;
   const episodes = episodesQuery.data;
   const trailer = trailerQuery.data;
-  const externalLinks = externalLinksQuery.data;
-  const news = newsQuery.data.slice(0, 3);
+  const externalLinks = externalLinksQuery.data || [];
+  const news = newsQuery.data ? newsQuery.data.slice(0, 3) : [];
 
   return (
     <motion.div className="min-h-screen bg-[#0b1622]">

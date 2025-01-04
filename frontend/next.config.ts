@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
       "www.youtube.com",
       "img1.ak.crunchyroll.com",
       "cdn.myanimelist.net",
+      "ggayane.github.io",
+      "image.tmdb.org",
+      "img.animeschedule.net",
     ],
   },
   async rewrites() {

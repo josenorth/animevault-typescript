@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 import time
 import argparse
 from sqlalchemy.orm import sessionmaker
-from database.db import engine
+from database.db_local import engine
 from models.v1.anime.anime_trend import AnimeTrend
 from models.v1.anime import Anime
 from datetime import datetime
@@ -17,9 +17,9 @@ DELAY_BETWEEN_REQUESTS = 60 / MAX_REQUESTS_PER_MINUTE
 Session = sessionmaker(bind=engine)
 session = Session()
 
-def fetch_trend(start_date, end_date, page=1, per_page=50):
+def fetch_trend(page=1, per_page=50):
     query = '''
-    query GetAnimeTrends($startDate: FuzzyDateInt, $endDate: FuzzyDateInt, $page: Int, $perPage: Int, $sort: [MediaTrendSort]) {
+    query GetAnimeTrends($page: Int, $perPage: Int, $sort: [MediaTrendSort]) {
         Page(page: $page, perPage: $perPage) {
             pageInfo {
                 currentPage
@@ -27,8 +27,7 @@ def fetch_trend(start_date, end_date, page=1, per_page=50):
             }
             media(
                 type: ANIME
-                startDate_greater: $startDate
-                endDate_lesser: $endDate
+                sort: TRENDING_DESC
             ) {
                 id
                 title {
@@ -47,8 +46,6 @@ def fetch_trend(start_date, end_date, page=1, per_page=50):
     }
     '''
     variables = {
-        "startDate": start_date,
-        "endDate": end_date,
         "page": page,
         "perPage": per_page,
         "sort": ["DATE_DESC"]
@@ -96,11 +93,11 @@ def insert_trend(data):
         print(f"Error inserting trend data: {e}")
         session.rollback()
 
-def main(start_date, end_date, start_page=1):
+def main(start_page=1):
     page = start_page
     per_page = 50
     while True:
-        data = fetch_trend(start_date, end_date, page, per_page)
+        data = fetch_trend(page, per_page)
         if data is None or 'data' not in data or 'Page' not in data['data'] or 'media' not in data['data']['Page']:
             print(f"Error fetching data for page {page}. Retrying...")
             time.sleep(60)
@@ -116,8 +113,6 @@ def main(start_date, end_date, start_page=1):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fetch and insert anime trend data from AniList API")
-    parser.add_argument('--start-date', type=int, required=True, help='The start date for fetching anime trend data (YYYYMMDD)')
-    parser.add_argument('--end-date', type=int, required=True, help='The end date for fetching anime trend data (YYYYMMDD)')
     parser.add_argument('--start-page', type=int, default=1, help='The page number to start fetching data from')
     args = parser.parse_args()
-    main(args.start_date, args.end_date, args.start_page)
+    main(args.start_page)

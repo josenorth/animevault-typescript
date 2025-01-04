@@ -17,6 +17,7 @@ function makeQueryClient() {
         // above 0 to avoid refetching immediately on the client
         staleTime: 21600 * 1000,
         gcTime: 21600 * 1000,
+        refetchOnWindowFocus: false
       },
     },
   })

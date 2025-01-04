@@ -45,18 +45,18 @@ export function AnimeCard({ anime, index }: AnimeCardProps) {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="relative block"
+      className="relative block w-[185px]" // Añadido ancho fijo
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link href={`/anime/${anime.id}/${formattedTitle}`}>
-        <motion.div className="aspect-[3/4] relative overflow-hidden rounded-lg">
+      <motion.div className="relative overflow-hidden rounded-lg h-[265px]">
           <Image
             src={anime.coverImage}
             alt={anime.title_romaji}
             fill
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 300px"
-          />
+            sizes="185px"
+            />
           <div className="absolute inset-0 transition-opacity group-hover:opacity-0" />
         </motion.div>
         <div className="relative bottom-0 left-0 right-0 p-0 pt-2">

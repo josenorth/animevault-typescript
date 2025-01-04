@@ -5,7 +5,7 @@ import ClientFiltersSkeleton from './ClientFiltersSkeleton';
 const Loading = () => {
   return (
     <SkeletonTheme baseColor="#182432" highlightColor="#183C2A">
-      <div className="min-h-screen bg-[#111827]">
+      <div className="min-h-screen bg-[#121212]">
         
       <ClientFiltersSkeleton />
 

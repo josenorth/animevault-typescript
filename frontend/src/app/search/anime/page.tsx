@@ -66,9 +66,10 @@ export default function Page() {
   if (loading) {
     return <Loading />
   }
+  console.log(trendingAnime)
 
   return (
-    <div className="min-h-screen bg-[#111827]">
+    <div className="min-h-screen bg-[#121212]">
       <ClientFilters onFiltersChange={handleFiltersChange} />
       {showFilterAnime ? (
         <FilterAnime filters={filters} />
@@ -92,7 +93,7 @@ function AnimePage({ trendingAnime, popularThisSeason, upcomingNextSeason, allTi
           <h2 className="font-poppins text-xl font-bold text-[#84CC16]">TRENDING NOW</h2>
           <button className="text-sm font-semibold text-[#84CC16] hover:underline font-sans">View All</button>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {trendingAnime.map((anime: Anime, index: number) => (
             <AnimeCard key={anime.id} anime={anime} index={index} />
           ))}
@@ -104,7 +105,7 @@ function AnimePage({ trendingAnime, popularThisSeason, upcomingNextSeason, allTi
           <h2 className="font-poppins text-xl font-bold text-[#84CC16]">POPULAR THIS SEASON</h2>
           <button className="text-sm text-[#84CC16] hover:underline font-roboto">View All</button>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {popularThisSeason.map((anime: Anime, index: number) => (
             <AnimeCard key={anime.id} anime={anime} index={index} />
           ))}
@@ -116,7 +117,7 @@ function AnimePage({ trendingAnime, popularThisSeason, upcomingNextSeason, allTi
           <h2 className="font-poppins text-xl font-bold text-[#84CC16]">UPCOMING NEXT SEASON</h2>
           <button className="text-sm text-[#84CC16] hover:underline font-roboto">View All</button>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {upcomingNextSeason.map((anime: Anime, index: number) => (
             <AnimeCard key={anime.id} anime={anime} index={index} />
           ))}
@@ -128,7 +129,7 @@ function AnimePage({ trendingAnime, popularThisSeason, upcomingNextSeason, allTi
           <h2 className="font-poppins text-xl font-bold text-[#84CC16]">ALL-TIME POPULAR</h2>
           <button className="text-sm text-[#84CC16] hover:underline font-roboto">View All</button>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {allTimePopular.map((anime: Anime, index: number) => (
             <AnimeCard key={anime.id} anime={anime} index={index} />
           ))}
