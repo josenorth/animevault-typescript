@@ -1,13 +1,15 @@
 import { motion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 import { Anime } from '@/types/anime/Anime'
+import { Rank } from '@/types/anime/Rank'
 import Image from 'next/image'
 
 interface AnimeInfoProps {
   anime: Anime
+  rank?: Rank
 }
 
-export function AnimeInfo({ anime }: AnimeInfoProps) {
+export function AnimeInfo({ anime, rank }: AnimeInfoProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -24,25 +26,41 @@ export function AnimeInfo({ anime }: AnimeInfoProps) {
           className="w-full md:w-48 h-72 object-cover rounded-md mb-4 md:mb-0 md:mr-6"
         />
         <div className="flex-grow">
-          <h3 className="text-2xl font-semibold mb-2 font-poppins text-[#84CC16]">{anime.title_english}</h3>
-          <p className=" dark:text-gray-300 mb-4 text-[#84CC16]">{anime.format} • {anime.episode_count} episodes • {anime.episode_duration} min</p>
-          <div className="flex flex-wrap gap-2 mb-4">
-            <Badge variant="secondary" className='bg-[#84CC16] text-[#065F46]'>{anime.status}</Badge>
-            <Badge variant="secondary" className='bg-[#84CC16] text-[#065F46]'> {anime.season} {anime.seasonYear}</Badge>
-            <Badge variant="secondary" className='bg-[#84CC16] text-[#065F46]'>{anime.source}</Badge>
+          <div className="flex flex-col md:flex-row justify-between">
+            <div>
+              <h3 className="text-2xl font-semibold mb-2 font-poppins text-[#84CC16]">{anime.title_english}</h3>
+              <p className="font-roboto mb-4 text-[#84CC16]">{anime.format} • {anime.episode_count} episodes • {anime.episode_duration} min</p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Badge variant="secondary" className='bg-[#84CC16] text-[#065F46] font-montserrat'>{anime.status}</Badge>
+                <Badge variant="secondary" className='bg-[#84CC16] text-[#065F46] font-montserrat'>{anime.season} {anime.seasonYear}</Badge>
+                <Badge variant="secondary" className='bg-[#84CC16] text-[#065F46] font-montserrat'>{anime.source}</Badge>
+              </div>
+              <p className="text-[#84CC16] mb-2 font-roboto">
+                <span className="font-semibold font-poppins">Aired:</span> {anime.start_date} to {anime.end_date}
+              </p>
+              <p className="text-[#84CC16] mb-2 font-roboto">
+                <span className="font-semibold font-poppins">Score:</span> {anime.average_score}%
+              </p>
+            </div>
+            
+           {/* Only render the right-side div if rank contains any valid value */}
+           {rank && (rank.rank || rank.popularity_rank) && (
+              <div className="mt-4 md:mt-0 md:text-right text-xl">
+                {rank.rank && (
+                  <p className="text-[#84CC16] mb-2 font-roboto">
+                    <span className="font-semibold font-poppins">Ranked:</span> #{rank.rank}
+                  </p>
+                )}
+                {rank.popularity_rank && (
+                  <p className="text-[#84CC16] font-roboto">
+                    <span className="font-semibold font-poppins">Popularity:</span> #{rank.popularity_rank}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
-          <p className="text-[#84CC16] dark:text-gray-200 mb-2">
-            <span className="font-semibold text-[#84CC16]">Aired:</span> {anime.start_date} to {anime.end_date}
-          </p>
-          <p className="text-[#84CC16] dark:text-gray-200 mb-2">
-            <span className="font-semibold text-[#84CC16]">Score:</span> {anime.average_score}%
-          </p>
-          <p className="text-[#84CC16] dark:text-gray-200 ">
-            <span className="font-semibold">Popularity:</span> {anime.popularity.toLocaleString()} members
-          </p>
         </div>
       </div>
     </motion.div>
   )
 }
-

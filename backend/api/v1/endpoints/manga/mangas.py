@@ -125,3 +125,37 @@ def get_manga_relations(manga_id: int, db: Session = Depends(get_db)):
         )
 
     return result
+
+# crear un endpoint filter parecido al de animes pero ahora para mangas
+@router.get("/filter", response_model=List[MangaSchema])
+def filter_mangas(
+    title: Optional[str] = None,
+    genres: Optional[List[str]] = None,
+    startDate: Optional[str] = None,
+    endDate: Optional[str] = None,
+    status: Optional[str] = None,
+    format: Optional[str] = None,
+    countryOfOrigin: Optional[str] = None,
+    page: int = 1,
+    limit: int = 20,
+    db: Session = Depends(get_db)
+):
+    query = db.query(MangaModel)
+    if title:
+        query = query.filter(MangaModel.title_romaji.ilike(f"%{title}%") | MangaModel.title_english.ilike(f"%{title}%"))
+    if genres:
+        query = query.join(MangaModel.genres).filter(Genre.name.in_(genres))
+    if startDate:
+        query = query.filter(MangaModel.startDate == startDate)
+    if endDate:
+        query = query.filter(MangaModel.endDate == endDate)
+    if status:
+        query = query.filter(MangaModel.status == status)
+    if format:
+        query = query.filter(MangaModel.format == format)
+    if countryOfOrigin:
+        query = query.filter(MangaModel.countryOfOrigin == countryOfOrigin)
+
+    offset = (page - 1) * limit
+    mangas = query.offset(offset).limit(limit).all()
+    return [map_manga_with_genres(manga, db) for manga in mangas]

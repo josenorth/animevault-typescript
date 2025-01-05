@@ -29,6 +29,7 @@ from models.v1.anime.anime_studios import anime_studios
 from models.v1.anime.anime_news import AnimeNews as AnimeNewsModel
 from schemas.v1.anime_news import AnimeNews as AnimeNewsSchema
 from models.v1.shared.genre import Genre
+from schemas.v1.anime_trend import AnimeRanking
 
 
 router = APIRouter()
@@ -163,7 +164,8 @@ def filter_animes(
 ):
     query = db.query(AnimeModel)
     if name:
-        query = query.filter(AnimeModel.title_romaji.ilike(f"%{name}%"))
+        # aceptar tambien title_english
+        query = query.filter(AnimeModel.title_romaji.ilike(f"%{name}%") | AnimeModel.title_english.ilike(f"%{name}%"))
     if genres:
         query = query.join(AnimeModel.genres).filter(Genre.name.in_(genres))
     if seasonYear:
@@ -185,6 +187,26 @@ def get_anime_by_id(anime_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Anime not found")
     
     return map_anime_with_studios(anime, db)
+
+# endpoint para obtener el rank de un anime tomando en cuenta el average_score de la tabla anime y otro rank tomando en cuenta el valor de popularity de la tabla anime_trend
+@router.get("/{anime_id}/rank", response_model=AnimeRanking)
+def get_anime_rank(anime_id: int, db: Session = Depends(get_db)):
+    anime = db.query(AnimeModel).filter(AnimeModel.id == anime_id).first()
+    if anime is None:
+        raise HTTPException(status_code=404, detail="Anime not found")
+
+    anime_trend = db.query(AnimeTrendModel).filter(AnimeTrendModel.anime_id == anime_id).first()
+    if anime_trend is None:
+        raise HTTPException(status_code=404, detail="Anime trend data not found")
+
+    rank = db.query(AnimeModel).filter(AnimeModel.average_score > anime.average_score).count() + 1
+    popularity_rank = db.query(AnimeTrendModel).filter(AnimeTrendModel.popularity > anime_trend.popularity).count() + 1
+
+    return {
+        "rank": rank,
+        "popularity_rank": popularity_rank
+    }
+    
 
 @router.get("/{anime_id}/characters", response_model=AnimeCharacters, summary="Get Anime Characters", description="Retrieve the list of characters for a specific anime.")
 def get_anime_details(anime_id: int, db: Session = Depends(get_db)):

@@ -69,7 +69,15 @@ const AnimePage = () => {
     ...queryOptions
   });
 
-  if (animeQuery.isLoading) {
+  const rankQuery = useQuery({
+    queryKey: ['rank', anime_id],
+    queryFn: () => fetcher(`/animes/${anime_id}/rank`),
+    ...queryOptions
+  });
+
+  const isLoading = animeQuery.isLoading || relationsQuery.isLoading || episodesQuery.isLoading || trailerQuery.isLoading || externalLinksQuery.isLoading || newsQuery.isLoading || rankQuery.isLoading;
+
+  if (isLoading) {
     return <Spinner />;
   }
 
@@ -83,6 +91,7 @@ const AnimePage = () => {
   const trailer = trailerQuery.data;
   const externalLinks = externalLinksQuery.data || [];
   const news = newsQuery.data ? newsQuery.data.slice(0, 3) : [];
+  const rank = rankQuery.data;
 
   return (
     <motion.div className="min-h-screen bg-[#0b1622]">
@@ -90,7 +99,7 @@ const AnimePage = () => {
       <div className="container mx-auto px-28 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <AnimeInfo anime={anime} />
+            <AnimeInfo anime={anime} rank={rank} />
             <AnimeDescription description={anime.description} />
             <AnimeEpisodePreview episodes={episodes} />
             <AnimeTrailer trailer={trailer} />

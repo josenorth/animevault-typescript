@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import Logo from "@/components/ui/logo"
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 
 const Navbar = () => {
   const pathname = usePathname()
@@ -14,12 +14,11 @@ const Navbar = () => {
   const [atTop, setAtTop] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
 
-  const isDetailPage = () => {
-    return /^\/(?:anime|manga)\/\d+\/[\w-]+$/.test(pathname || '')
-  }
-  const isAboutPage = () => {
-    return pathname === '/about'
-  }
+  // Check if the current page is a detail page
+  const isDetailPage = () => /^\/(anime|manga)\/\d+\/[\w-]+$/.test(pathname || '')
+
+  // Check if the current page is the about page
+  const isAboutPage = () => pathname === '/about'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,27 +35,29 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed w-full z-50 py-3 transition-all duration-300 ${visible ? 'top-0' : '-top-20'} ${
-        isAboutPage() 
-          ? 'bg-transparent' 
-          : atTop && isDetailPage() 
-            ? '!bg-opacity-50 bg-[#111827]' 
-            : 'bg-[#121212]'
+      className={`fixed w-full z-50 py-3 transition-all duration-300 ${
+        visible ? 'top-0' : '-top-20'
+      } ${
+        isAboutPage()
+          ? 'bg-transparent'
+          : atTop && isDetailPage()
+          ? 'bg-[#121212]/50'
+          : 'bg-[#121212]'
       }`}
       style={{ height: '80px' }}
     >
       <div className="container mx-auto px-4 md:px-28">
         <div className="flex justify-between items-center h-full">
           <Link href="/" className="" shallow={true}>
-            <Logo className="w-14 h-auto mr-4 md:mr-24" />
+            <Image src="/Logo.svg" alt="Logo" width={48} height={48} className="mr-24" />
           </Link>
-          
-          {/* Menú Desktop */}
+
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-4 flex-1 justify-center">
             <div className="flex space-x-4 font-roboto font-semibold">
               <NavLink href="/">Home</NavLink>
               <NavLink href="/search/anime">Anime</NavLink>
-              <NavLink href="/manga">Manga</NavLink>
+              <NavLink href="/search/manga">Manga</NavLink>
               <NavLink href="/about">About</NavLink>
             </div>
           </div>
@@ -69,8 +70,8 @@ const Navbar = () => {
             </Button>
           </div>
 
-          {/* Botón Hamburguesa */}
-          <button 
+          {/* Hamburger Button */}
+          <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden text-white p-2"
           >
@@ -80,8 +81,7 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Menú Móvil */}
-
+        {/* Mobile Menu */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
