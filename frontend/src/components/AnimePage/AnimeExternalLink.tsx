@@ -14,7 +14,7 @@ export function AnimeExternalLinks({ links }: AnimeExternalLinksProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="bg-transparent dark:bg-gray-800 rounded-lg shadow-md mt-8 mb-8"
+      className="bg-transparent dark:bg-gray-800 rounded-lg shadow-md mb-8"
     >
       <h3 className="text-xl font-semibold mb-4 text-[#84CC16]">External Links</h3>
       <div className="grid grid-cols-2 gap-4">

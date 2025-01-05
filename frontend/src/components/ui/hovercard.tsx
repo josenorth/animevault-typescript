@@ -11,7 +11,7 @@ interface HoverCardProps {
   showLeft: boolean;
   anime?: {
     average_score?: number;
-    studios?: { name: string }[];
+    studios?: { name: string, isMain: boolean }[];
     format?: string;
     episode_count?: number;
     genres?: { name: string }[];
@@ -54,7 +54,10 @@ export const HoverCard: React.FC<HoverCardProps> = ({ isVisible, showLeft, anime
     return (
       <div className="space-y-1">
         <div className="text-[#9599b7] text-sm">
-          {anime.studios?.map((studio) => studio.name).join(", ")}
+          {anime.studios
+            ?.filter((studio) => studio.isMain)
+            .map((studio) => studio.name)
+            .join(", ")}
         </div>
         <div className="text-xs text-[#9599b7]/80 flex items-center gap-2">
           <span>{anime.format || "ONA"}</span>

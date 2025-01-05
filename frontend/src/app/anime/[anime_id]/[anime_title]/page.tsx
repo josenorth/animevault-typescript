@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { AnimeHeader } from '@/components/AnimePage/AnimeHeader';
 import { AnimeInfo } from '@/components/AnimePage/AnimeInfo';
 import { AnimeDescription } from '@/components/AnimePage/AnimeDescription';
-import { AnimeStudios } from '@/components/AnimePage/AnimeStudios';
+// import { AnimeStudios } from '@/components/AnimePage/AnimeStudios';
 import { AnimeRelations } from '@/components/AnimePage/AnimeRelations';
 import { AnimeEpisodePreview } from '@/components/AnimePage/AnimeEpisode';
 import { AnimeTrailer } from '@/components/AnimePage/AnimeTrailer';
@@ -106,7 +106,7 @@ const AnimePage = () => {
             <AnimeNews news={news} />
           </div>
           <div>
-            <AnimeStudios studios={anime.studios} />
+            {/* <AnimeStudios studios={anime.studios} /> */}
             <AnimeExternalLinks links={externalLinks} />
             <AnimeRelations relations={relations} />
 

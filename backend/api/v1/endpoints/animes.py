@@ -63,7 +63,6 @@ def map_anime_with_studios(anime, db):
         anime_studios.c.isMain
     ).join(anime_studios, Studio.id == anime_studios.c.studio_id).filter(
         anime_studios.c.anime_id == anime.id,
-        anime_studios.c.isMain == True
     ).all()
 
     season = db.query(SeasonModel).filter(SeasonModel.id == anime.season_id).first()
@@ -87,7 +86,7 @@ def map_anime_with_studios(anime, db):
         "status": anime.status,
         "source": anime.source,
         "genres": anime.genres,
-        "studios": [{"id": studio.id, "name": studio.name, "isMain": studio.isMain} for studio in studios if studio.isMain],
+        "studios": [{"id": studio.id, "name": studio.name, "isMain": studio.isMain} for studio in studios],
         "season": season.name if season else None
     }
 
